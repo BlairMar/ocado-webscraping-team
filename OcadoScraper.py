@@ -1,4 +1,5 @@
-### Imports:
+#%%
+### Imports: 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from pprint import pprint
@@ -8,8 +9,13 @@ from pprint import pprint
 class OcadoScraper:
     def __init__(self):
         """
-        Initialiser: to decide what functions are called here and what attributes and arguments are defined
+        Access Ocado front page using chromedriver
         """
+        self.chrome_options = webdriver.ChromeOptions()
+        self.chrome_options.add_argument("--start-maximized")
+        self.driver = webdriver.Chrome(options=self.chrome_options)
+        self.driver.maximize_window()
+        self.driver.get('https://www.ocado.com/')
 
     def func1(self):
         """
@@ -81,4 +87,4 @@ class OcadoScraper:
         """
 
 if __name__ == '__main__':
-    pass
+    ocado = OcadoScraper()
