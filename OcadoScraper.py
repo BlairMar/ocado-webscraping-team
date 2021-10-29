@@ -16,11 +16,17 @@ class OcadoScraper:
         self.driver = webdriver.Chrome(options=self.chrome_options)
         self.driver.maximize_window()
         self.driver.get('https://www.ocado.com/')
+        try:
+            self._accept_cookies()
+        except:
+            pass
 
-    def func1(self):
+    def _accept_cookies(self):
         """
-        Clicks Cookies button
+        Locate and Click Cookies Button
         """
+        _accept_cookies = self.driver.find_element(By.XPATH, '//*[@id="onetrust-accept-btn-handler"]')
+        _accept_cookies.click()
 
     def func2(self):
         """
