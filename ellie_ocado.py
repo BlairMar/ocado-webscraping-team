@@ -12,7 +12,11 @@ from pprint import pprint
 class OcadoScraper:
     def __init__(self):
         """
+        ###REPLACE THIS:
         Initialiser: to decide what functions are called here and what attributes and arguments are defined
+        ###WITH THIS: (Can add more info here if you want)
+        Access Ocado front page using chromedriver
+        ###
         """
         self.chrome_options = webdriver.ChromeOptions()
         self.chrome_options.add_argument("--start-maximized")
@@ -29,23 +33,32 @@ class OcadoScraper:
 
     def _accept_cookies(self):
         """
+        ###DELETE FOLLOWING LINE:
         Clicks Cookies button
+        ###
         Locate and Click Cookies Button
         """
         _accept_cookies = self.driver.find_element(By.XPATH, '//*[@id="onetrust-accept-btn-handler"]')
         _accept_cookies.click()
 
     def _get_category_links(self):
+        ###I DON'T THINK WE NEED THE IF STATEMENT
         if not self.category_links: # remove this probably
             self.driver.get("https://www.ocado.com/browse")
             categories_web_object = self.driver.find_elements(By.XPATH, '//*[@id="main-content"]/div[2]/div[1]/div/div/div[1]/div/div[1]/div/ul/li/a')
+            ###REPLACE THIS:
             self.category_links = {category.text : category.get_attribute('href') for category in categories_web_object}
-
+            ###WITH THIS: (getting rid of hideOOS=true)
+            self.category_links = {category.text : category.get_attribute('href').replace("hideOOS=true", "") for category in categories_web_object}
+            ###
+            
     def _get_product_links(self, category_name): 
+        ### Maybe add the following chunk in another function that opens a page displaying all items given the category name:
         category_url = self.category_links[category_name]  
         self.driver.get(category_url)  
         number_of_products_in_category = self.driver.find_element(By.XPATH, '//*[@id="main-content"]/div[2]/div[2]/div[2]/div[2]/div/span').text.split(' ')[0]
-        self.driver.get(category_url + "?display=" + number_of_products_in_category)  
+        self.driver.get(category_url + "?display=" + number_of_products_in_category)
+        ###
         urls_tmp_web_object = []
         n = int(int(number_of_products_in_category)/30) ## Scroll to get 30 product url's at a time:
         for i in range(n):
@@ -75,7 +88,7 @@ class OcadoScraper:
                 break
         self.product_data[category_name] = product_details
 
-    @staticmethod
+    @staticmethod 
     def _get_product_xpaths(key):
         product_xpaths = { 'Name' : '//*[@id="overview"]/section[1]/header/h2',
                            'Description' : '//*[@id="productInformation"]/div[2]/div[1]/div[2]/div/div[1]/div',
@@ -163,7 +176,7 @@ class OcadoScraper:
 
 if __name__ == '__main__':
     pass
-#%%
+#%% ### Put these in the if __name__ == '__main__':
 ocado = OcadoScraper() 
 ocado.scrape_products()
 print(len(ocado.product_links["Christmas"]))
