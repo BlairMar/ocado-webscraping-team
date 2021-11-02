@@ -47,7 +47,7 @@ class OcadoScraper:
     def _get_number_of_products_and_display_all(self, category_name):
         category_page_link = self.category_links[category_name]  
         self.driver.get(category_page_link)  
-        number_of_products = self.driver.find_element(By.XPATH, '//*[@id="main-content"]/div[2]/div[2]/div[2]/div[2]/div/span').text.split(' ')[0]
+        number_of_products = self.driver.find_element(By.XPATH, '//*[@id="main-content"]/div[2]/div[2]//div/div[2]/div/span').text.split(' ')[0]
         self.driver.get(category_page_link + "?display=" + number_of_products)
         return number_of_products 
 
@@ -165,15 +165,16 @@ class OcadoScraper:
         """
     
 if __name__ == '__main__':
-    ocado = OcadoScraper() 
-    ocado.scrape_products()
+    pass
+    # ocado = OcadoScraper() 
+    # ocado.scrape_products()
 
 #%%
 
 ocado = OcadoScraper()
-categories_to_scrape = ["Soft Drinks, Tea & Coffee"]
+categories_to_scrape = ["Health, Beauty & Personal Care"]
 ocado.scrape_products(categories_to_scrape)
-print(len(ocado.product_links["Soft Drinks, Tea & Coffee"]))
+print(len(ocado.product_links["Health, Beauty & Personal Care"]))
 print(ocado.category_links)
 
 # %%
