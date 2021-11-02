@@ -1,5 +1,8 @@
 #%%
+
 ### Imports:
+
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import requests
@@ -23,10 +26,12 @@ class OcadoScraper:
             self._accept_cookies()
         except:
             pass
+
         self.category_links = {}
         self.product_links = {}
         self.product_data = {}
         self._get_category_links() # populate category_links attribute
+
 
     def _accept_cookies(self):
         """
@@ -34,6 +39,7 @@ class OcadoScraper:
         """
         _accept_cookies = self.driver.find_element(By.XPATH, '//*[@id="onetrust-accept-btn-handler"]')
         _accept_cookies.click()
+
 
     def _get_category_links(self):
         self.driver.get("https://www.ocado.com/browse")
@@ -100,6 +106,7 @@ class OcadoScraper:
             if i == 3:
                 break
 
+
     def func2(self):
         """
         Gets Browse shop category URLs
@@ -165,6 +172,7 @@ class OcadoScraper:
         """
     
 if __name__ == '__main__':
+
     pass
     # ocado = OcadoScraper() 
     # ocado.scrape_products()
@@ -178,3 +186,4 @@ print(len(ocado.product_links["Health, Beauty & Personal Care"]))
 print(ocado.category_links)
 
 # %%
+
