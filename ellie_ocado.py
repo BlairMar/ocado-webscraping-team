@@ -40,13 +40,20 @@ class OcadoScraper:
         categories_web_object = self.driver.find_elements(By.XPATH, '//*[@id="main-content"]/div[2]/div[1]/div/div/div[1]/div/div[1]/div/ul/li/a')
         self.category_links = {category.text : category.get_attribute('href').replace("?hideOOS=true", "") for category in categories_web_object}
 
-    def _get_product_links(self, category_name): 
-        category_url = self.category_links[category_name]  
-        self.driver.get(category_url)  
-        number_of_products_in_category = self.driver.find_element(By.XPATH, '//*[@id="main-content"]/div[2]/div[2]/div[2]/div[2]/div/span').text.split(' ')[0]
-        self.driver.get(category_url + "?display=" + number_of_products_in_category)  
+    def _get_product_links(self, category_name):
+        number_of_products_in_category = self._get_number_of_products_and_display_all(category_name)
+        self.product_links[category_name] = self._scroll_to_get_all_product_links(number_of_products_in_category, 30)
+
+    def _get_number_of_products_and_display_all(self, category_name):
+        category_page_link = self.category_links[category_name]  
+        self.driver.get(category_page_link)  
+        number_of_products = self.driver.find_element(By.XPATH, '//*[@id="main-content"]/div[2]/div[2]/div[2]/div[2]/div/span').text.split(' ')[0]
+        self.driver.get(category_page_link + "?display=" + number_of_products)
+        return number_of_products 
+
+    def _scroll_to_get_all_product_links(self, number_of_products, number_of_items_in_each_scroll):
         urls_tmp_web_object = []
-        n = int(int(number_of_products_in_category)/30) ## Scroll to get 30 product links at a time:
+        n = int(int(number_of_products)/number_of_items_in_each_scroll) 
         for i in range(n):
             self.driver.execute_script(f"window.scrollTo(0, document.body.scrollHeight*{(i+1)/n});")
             urls_tmp_web_object.extend(self.driver.find_elements(By.XPATH, '//*[@id="main-content"]/div[2]/div[2]/ul/li/div[2]/div[1]/a'))
@@ -54,7 +61,7 @@ class OcadoScraper:
         urls_web_object = list(set(urls_tmp_web_object))
         urls_web_object = self.driver.find_elements(By.XPATH, '//*[@id="main-content"]/div[2]/div[2]/ul/li/div[2]/div[1]/a')
         links = [url.get_attribute('href') for url in urls_web_object]
-        self.product_links[category_name] = links
+        return links
 
     def _get_product_data(self, category_name):
         product_details = {} 
