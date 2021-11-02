@@ -12,7 +12,7 @@ from pprint import pprint
 class OcadoScraper:
     def __init__(self):
         """
-        Initialiser: to decide what functions are called here and what attributes and arguments are defined
+        Access Ocado front page using chromedriver
         """
         self.chrome_options = webdriver.ChromeOptions()
         self.chrome_options.add_argument("--start-maximized")
@@ -26,20 +26,19 @@ class OcadoScraper:
         self.category_links = {}
         self.product_links = {}
         self.product_data = {}
+        self._get_category_links() # populate category_links attribute
 
     def _accept_cookies(self):
         """
-        Clicks Cookies button
         Locate and Click Cookies Button
         """
         _accept_cookies = self.driver.find_element(By.XPATH, '//*[@id="onetrust-accept-btn-handler"]')
         _accept_cookies.click()
 
     def _get_category_links(self):
-        if not self.category_links: # remove this probably
-            self.driver.get("https://www.ocado.com/browse")
-            categories_web_object = self.driver.find_elements(By.XPATH, '//*[@id="main-content"]/div[2]/div[1]/div/div/div[1]/div/div[1]/div/ul/li/a')
-            self.category_links = {category.text : category.get_attribute('href') for category in categories_web_object}
+        self.driver.get("https://www.ocado.com/browse")
+        categories_web_object = self.driver.find_elements(By.XPATH, '//*[@id="main-content"]/div[2]/div[1]/div/div/div[1]/div/div[1]/div/ul/li/a')
+        self.category_links = {category.text : category.get_attribute('href').replace("?hideOOS=true", "") for category in categories_web_object}
 
     def _get_product_links(self, category_name): 
         category_url = self.category_links[category_name]  
@@ -47,7 +46,7 @@ class OcadoScraper:
         number_of_products_in_category = self.driver.find_element(By.XPATH, '//*[@id="main-content"]/div[2]/div[2]/div[2]/div[2]/div/span').text.split(' ')[0]
         self.driver.get(category_url + "?display=" + number_of_products_in_category)  
         urls_tmp_web_object = []
-        n = int(int(number_of_products_in_category)/30) ## Scroll to get 30 product url's at a time:
+        n = int(int(number_of_products_in_category)/30) ## Scroll to get 30 product links at a time:
         for i in range(n):
             self.driver.execute_script(f"window.scrollTo(0, document.body.scrollHeight*{(i+1)/n});")
             urls_tmp_web_object.extend(self.driver.find_elements(By.XPATH, '//*[@id="main-content"]/div[2]/div[2]/ul/li/div[2]/div[1]/a'))
@@ -71,7 +70,7 @@ class OcadoScraper:
                                         #    'Price per' : price_per,
                                         'Rating' : rating 
                                         }  
-            if i == 1:  ### remove - just for testing
+            if i == 3:  ### get the first i products - just for testing
                 break
         self.product_data[category_name] = product_details
 
@@ -86,16 +85,14 @@ class OcadoScraper:
         return product_xpaths[key]
 
     def scrape_products(self, categories="ALL"):
-        self._get_category_links()
         if categories == "ALL":
-            categories = self.category_links.keys()
+            categories = self.category_links.keys()        
         for i, category in enumerate(categories):
             self._get_product_links(category)
             self._get_product_data(category)
-            if i == 0:
+            if i == 3:
                 break
 
- 
     def func2(self):
         """
         Gets Browse shop category URLs
@@ -160,14 +157,16 @@ class OcadoScraper:
         Saves dictionary in a file
         """
     
-
 if __name__ == '__main__':
-    pass
-#%%
-ocado = OcadoScraper() 
-ocado.scrape_products()
-print(len(ocado.product_links["Christmas"]))
-print(ocado.category_links)
+    ocado = OcadoScraper() 
+    ocado.scrape_products()
 
+#%%
+
+ocado = OcadoScraper()
+categories_to_scrape = ["Soft Drinks, Tea & Coffee"]
+ocado.scrape_products(categories_to_scrape)
+print(len(ocado.product_links["Soft Drinks, Tea & Coffee"]))
+print(ocado.category_links)
 
 # %%
