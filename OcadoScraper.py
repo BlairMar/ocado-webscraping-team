@@ -115,6 +115,9 @@ class OcadoScraper:
     @staticmethod
     def _get_sku_from_url(url):
         return url.split("-")[-1]
+        
+    def zoom_page(self, zoom_percentage=100):
+        self.driver.execute_script(f"document.body.style.zoom='{zoom_percentage}%'")
 
     def func2(self):
         """
