@@ -7,6 +7,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 import requests
 import time
+import json
 
 from pprint import pprint
 ###
@@ -105,8 +106,12 @@ class OcadoScraper:
             self._get_product_data(category)
             if i == 3:
                 break
+        self.save_product_links()
 
-
+    def save_product_links(self, mode='a'):
+        with open('product_links', mode=mode) as f:
+            json.dump(self.product_links)
+    
     def func2(self):
         """
         Gets Browse shop category URLs
