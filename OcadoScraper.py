@@ -23,11 +23,7 @@ class OcadoScraper:
         self.driver = webdriver.Chrome(options=self.chrome_options)
         self.driver.maximize_window()
         self.driver.get('https://www.ocado.com/')
-        try:
-            self._accept_cookies()
-        except:
-            pass
-
+        self._accept_cookies()
         self.category_links = {}
         self.product_links = {}
         self.product_data = {}
@@ -38,12 +34,16 @@ class OcadoScraper:
         """
         Locate and Click Cookies Button
         """
-        _accept_cookies = self.driver.find_element(By.XPATH, '//*[@id="onetrust-accept-btn-handler"]')
-        _accept_cookies.click()
+        try:
+            _accept_cookies = self.driver.find_element(By.XPATH, '//*[@id="onetrust-accept-btn-handler"]')
+            _accept_cookies.click()
+        except:
+            print("No Cookies buttons found on page")
 
 
     def _get_category_links(self):
         self.driver.get("https://www.ocado.com/browse")
+        self._accept_cookies()
         categories_web_object = self.driver.find_elements(By.XPATH, '//*[@id="main-content"]/div[2]/div[1]/div/div/div[1]/div/div[1]/div/ul/li/a')
         self.category_links = {category.text : category.get_attribute('href').replace("?hideOOS=true", "") for category in categories_web_object}
 
