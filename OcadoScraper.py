@@ -111,7 +111,11 @@ class OcadoScraper:
     def save_product_links(self, mode='a'):
         with open('product_links', mode=mode) as f:
             json.dump(self.product_links)
-    
+
+    @staticmethod
+    def _get_sku_from_url(url):
+        return url.split("-")[-1]
+
     def func2(self):
         """
         Gets Browse shop category URLs
