@@ -46,12 +46,12 @@ class OcadoScraper:
         self._accept_cookies()
         categories_web_object = self.driver.find_elements(By.XPATH, '//*[@id="main-content"]/div[2]/div[1]/div/div/div[1]/div/div[1]/div/ul/li/a')
         self.category_urls = {category.text : category.get_attribute('href').replace("?hideOOS=true", "") for category in categories_web_object}
-        for category_name, category_url in self.category_urls:
+        for category_name, category_url in self.category_urls.items():
             number_of_products = self._get_number_of_products(category_url)
             self.category_urls[category_name] += '?display=' + number_of_products
 
     def _get_product_links(self, category_name):
-        number_of_products_in_category = self.category_urls[category_name]
+        number_of_products_in_category = self.category_urls[category_name].split('=')[-1]
         self.product_links[category_name] = self._scroll_to_get_all_product_links(number_of_products_in_category, 30)
 
     def _get_number_of_products(self, category_url):
