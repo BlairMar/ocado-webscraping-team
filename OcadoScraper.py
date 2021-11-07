@@ -79,7 +79,7 @@ class OcadoScraper:
             price = self.driver.find_element(By.XPATH, self._get_product_xpaths('Price')).text
             # price_per = self.driver.find_element(By.XPATH, self._get_product_xpaths('Price per')).text # doesn't exist for all items
             rating = self.driver.find_element(By.XPATH, self._get_product_xpaths('Rating')).get_attribute('title').split(' ')[1]        
-            sku = _get_sku_from_url(url)
+            sku = OcadoScraper._get_sku_from_url(url)
             product_details[sku] = {    'Name' : name,
                                         'Description' : description,
                                         'Price' : price,
@@ -112,7 +112,7 @@ class OcadoScraper:
 
     def save_product_links(self, mode='a'):
         with open('product_links', mode=mode) as f:
-            json.dump(self.product_links)
+            json.dump(self.product_links, f)
 
     @staticmethod
     def _get_sku_from_url(url):
