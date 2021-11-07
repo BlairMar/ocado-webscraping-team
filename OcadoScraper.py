@@ -1,20 +1,16 @@
 #%%
-
 ### Imports:
-
-
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import requests
 import time
 import json
-
 from pprint import pprint
 ###
 #%%
 ### Class Template:
 class OcadoScraper:
-    def __init__(self):
+    def __init__(self, scrape_categories=False):
         """
         Access Ocado front page using chromedriver
         """
@@ -27,7 +23,7 @@ class OcadoScraper:
         self.category_urls = {}
         self.product_links = {}
         self.product_data = {}
-        self._get_categories() # populate category_links attribute
+        self._get_categories(scrape_categories) # populate category_links attribute
 
 
     def _accept_cookies(self):
@@ -40,8 +36,16 @@ class OcadoScraper:
         except:
             print("No Cookies buttons found on page")
 
+    def _get_categories(self, scrape_categories=True):
+        if scrape_categories:
+            self._scrape_category_urls()
+        else:
+            with open("./data/category_urls") as f:
+                data = f.read()
+                self.category_urls = json.loads(data)
 
-    def _get_categories(self):
+
+    def _scrape_category_urls(self):
         self.driver.get("https://www.ocado.com/browse")
         self._accept_cookies()
         categories_web_object = self.driver.find_elements(By.XPATH, '//*[@id="main-content"]/div[2]/div[1]/div/div/div[1]/div/div[1]/div/ul/li/a')
@@ -49,9 +53,11 @@ class OcadoScraper:
         for category_name, category_url in self.category_urls.items():
             number_of_products = self._get_number_of_products(category_url)
             self.category_urls[category_name] += '?display=' + number_of_products
+        self.save_category_urls()
 
     def _get_product_links(self, category_name):
         number_of_products_in_category = self.category_urls[category_name].split('=')[-1]
+        self.driver.get(self.category_urls[category_name])
         self.product_links[category_name] = self._scroll_to_get_all_product_links(number_of_products_in_category, 30)
 
     def _get_number_of_products(self, category_url):
@@ -69,7 +75,7 @@ class OcadoScraper:
 
     def _scroll_to_get_all_product_links(self, number_of_products, number_of_items_in_each_scroll):
         urls_tmp_web_object = []
-        n = int(int(number_of_products)/number_of_items_in_each_scroll) 
+        n = int(int(number_of_products)/number_of_items_in_each_scroll)
         for i in range(n):
             self.driver.execute_script(f"window.scrollTo(0, document.body.scrollHeight*{(i+1)/n});")
             urls_tmp_web_object.extend(self.driver.find_elements(By.XPATH, '//*[@id="main-content"]/div[2]/div[2]/ul/li/div[2]/div[1]/a'))
@@ -120,8 +126,12 @@ class OcadoScraper:
         self.save_product_links()
 
     def save_product_links(self, mode='a'):
-        with open('product_links', mode=mode) as f:
+        with open('./data/product_links', mode=mode) as f:
             json.dump(self.product_links, f)
+    
+    def save_category_urls(self, mode='w'):
+        with open('./data/category_urls', mode=mode) as f:
+            json.dump(self.category_urls, f)
 
     @staticmethod
     def _get_sku_from_url(url):
@@ -204,9 +214,11 @@ if __name__ == '__main__':
 
 ocado = OcadoScraper()
 categories_to_scrape = ["Health, Beauty & Personal Care"]
-ocado.scrape_products(categories_to_scrape)
+#%%
+ocado._get_product_links("Health, Beauty & Personal Care")  
+#%%
 print(len(ocado.product_links["Health, Beauty & Personal Care"]))
-print(ocado.category_links)
 
-# %%
+#%%
 
+ocado = OcadoScraper(scrape_categories=False)
