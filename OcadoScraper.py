@@ -24,10 +24,10 @@ class OcadoScraper:
         self.driver.maximize_window()
         self.driver.get('https://www.ocado.com/')
         self._accept_cookies()
-        self.category_links = {}
+        self.category_urls = {}
         self.product_links = {}
         self.product_data = {}
-        self._get_category_links() # populate category_links attribute
+        self._get_categories() # populate category_links attribute
 
 
     def _accept_cookies(self):
@@ -41,22 +41,31 @@ class OcadoScraper:
             print("No Cookies buttons found on page")
 
 
-    def _get_category_links(self):
+    def _get_categories(self):
         self.driver.get("https://www.ocado.com/browse")
         self._accept_cookies()
         categories_web_object = self.driver.find_elements(By.XPATH, '//*[@id="main-content"]/div[2]/div[1]/div/div/div[1]/div/div[1]/div/ul/li/a')
-        self.category_links = {category.text : category.get_attribute('href').replace("?hideOOS=true", "") for category in categories_web_object}
+        self.category_urls = {category.text : category.get_attribute('href').replace("?hideOOS=true", "") for category in categories_web_object}
+        for category_name, category_url in self.category_urls:
+            number_of_products = self._get_number_of_products(category_url)
+            self.category_urls[category_name] += '?display=' + number_of_products
 
     def _get_product_links(self, category_name):
-        number_of_products_in_category = self._get_number_of_products_and_display_all(category_name)
+        number_of_products_in_category = self.category_urls[category_name]
         self.product_links[category_name] = self._scroll_to_get_all_product_links(number_of_products_in_category, 30)
 
-    def _get_number_of_products_and_display_all(self, category_name):
-        category_page_link = self.category_links[category_name]  
-        self.driver.get(category_page_link)  
+    def _get_number_of_products(self, category_url):
+        self.driver.get(category_url)
         number_of_products = self.driver.find_element(By.XPATH, '//*[@id="main-content"]/div[2]/div[2]//div/div[2]/div/span').text.split(' ')[0]
-        self.driver.get(category_page_link + "?display=" + number_of_products)
-        return number_of_products 
+        return number_of_products
+
+    #######OLD:
+    # def _get_number_of_products_and_display_all(self, category_name):
+    #     category_page_link = self.category_links[category_name]  
+    #     self.driver.get(category_page_link)  
+    #     number_of_products = self.driver.find_element(By.XPATH, '//*[@id="main-content"]/div[2]/div[2]//div/div[2]/div/span').text.split(' ')[0]
+    #     self.driver.get(category_page_link + "?display=" + number_of_products)
+    #     return number_of_products 
 
     def _scroll_to_get_all_product_links(self, number_of_products, number_of_items_in_each_scroll):
         urls_tmp_web_object = []
