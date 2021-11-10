@@ -45,7 +45,7 @@ class OcadoScraper:
                 self.category_urls = json.loads(data)
 
     def _scrape_category_urls(self):
-        self.driver.get("https://www.ocado.com/browse")
+        self.driver.get(self.ROOT + "browse")
         self._accept_cookies()
         categories_web_object = self.driver.find_elements(By.XPATH, '//*[@id="main-content"]/div[2]/div[1]/div/div/div[1]/div/div[1]/div/ul/li/a')
         self.category_urls = {category.text : category.get_attribute('href').replace("?hideOOS=true", "") for category in categories_web_object}
@@ -81,7 +81,7 @@ class OcadoScraper:
         for i, url in enumerate(self.product_links[category_name]): ## remove enumerate 
             self.driver.get(url)
             product_attributes = {}
-            for key, value in self._get_attribute_xpaths().items():
+            for key, value in OcadoScraper._get_attribute_xpaths().items():
                 attribute_web_element = self._get_attribute_by_xpath_or_none(key, value)
                 if attribute_web_element:
                     if key in ['Name', 'Product Information', 'Price', 'Price per', 'Offers', 'Ingredients', 'Nutrition']:
@@ -94,7 +94,7 @@ class OcadoScraper:
                        product_attributes[key] = True  
                 else:
                     product_attributes[key] = False if key == 'Out of Stock' else None                                                              
-            product_details[self._get_sku_from_url(url)] = product_attributes
+            product_details[OcadoScraper._get_sku_from_url(url)] = product_attributes
             # if i == 10:  ### get the first i products - just for testing
             #     break
         self.product_data[category_name] = product_details
@@ -102,7 +102,7 @@ class OcadoScraper:
     def _scrape_hidden_attributes(self, xpath):
         hidden_html_elements = self.driver.find_elements(By.XPATH, xpath)
         text_in_hidden_elements = [element.get_attribute('textContent') for element in hidden_html_elements]
-        return (','.join(str(text) for text in text_in_hidden_elements))        
+        return (' '.join(str(text) for text in text_in_hidden_elements))        
 
     def _get_attribute_by_xpath_or_none(self, attribute_name, xpath):
         """
@@ -250,7 +250,11 @@ print(len(ocado.product_links["Bakery"]))
 #%%
 ocado._get_product_links("Health, Beauty & Personal Care")  
 #%%
-print(len(ocado.product_links["Health, Beauty & Personal Care"]))
+ocado = OcadoScraper()
 categories_to_scrape = ["Baby, Parent & Kids"]
 ocado.scrape_products(categories_to_scrape)
 print(len(ocado.product_links["Baby, Parent & Kids"]))
+
+
+
+# %%
