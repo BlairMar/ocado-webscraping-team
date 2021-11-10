@@ -217,14 +217,9 @@ if __name__ == '__main__':
 
 ocado = OcadoScraper()
 categories_to_scrape = ["Health, Beauty & Personal Care"]
+ocado.scrape_products(categories_to_scrape)
 #%%
 ocado._get_product_links("Health, Beauty & Personal Care")  
 #%%
 print(len(ocado.product_links["Health, Beauty & Personal Care"]))
 
-<<<<<<< HEAD
-=======
-#%%
-
-ocado = OcadoScraper(scrape_categories=False)
->>>>>>> main
