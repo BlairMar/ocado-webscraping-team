@@ -180,70 +180,7 @@ class OcadoScraper:
     def zoom_page(self, zoom_percentage=100):
         self.driver.execute_script(f"document.body.style.zoom='{zoom_percentage}%'")
 
-    def func2(self):
-        """
-        Gets Browse shop category URLs
-        """
-    
-    def func3(self):
-        """
-        Gets inner category urls from each Browse shop category
-        """
-    
-    def func4(self):
-        """
-        Opens URL in new tab
-        """
 
-    def func5(self):
-        """
-        Closes current tab (This function might be redundant)
-        """
-
-    def func6_0(self):
-        """
-        Gets number of items that can be displayed on page
-        """
-
-    def func6(self):
-        """
-        Displays all items on page
-        """
-
-    def func7(self):
-        """
-        Collects all the item URLs on a page
-        """
-    
-    def func8(self):
-        """
-        Gets images from item page
-        """
-    
-    def func9_0(self):
-        """
-        Gets price, description, SKU, reviews from item page
-        """
-    def func9(self):
-        """
-        Scrapes an item's page
-        """
-
-    def func10(self):
-        """
-        Creates folder in which to store data dictionaries if the folder doesn't already exist
-        """
-    
-    def func11(self):
-        """
-        Saves data into dictionary
-        """
-    
-    def func12(self):
-        """
-        Saves dictionary in a file
-        """
-    
 if __name__ == '__main__':
 
     # ocado = OcadoScraper()
