@@ -80,14 +80,6 @@ class OcadoScraper:
         product_details = {} 
         for i, url in enumerate(self.product_links[category_name]): ## remove enumerate 
             self.driver.get(url)
-            # images = self.driver.find_elements(By.XPATH, '//*[@class="bop-gallery__miniatures"]//img')
-            # image_list = []
-            # for image in images:
-            #     print(image.get_attribute('src'))
-            #     image_list.append(image.get_attribute('src').replace("75x75", "1280x1280"))
-            #     print(url, image_list)
-                
-            
             product_attributes = {}
             for key, value in OcadoScraper._get_attribute_xpaths().items():
                 attribute_web_element = self._get_attribute_by_xpath_or_none(key, value)
@@ -95,13 +87,13 @@ class OcadoScraper:
                     if key in ['Name', 'Product Information', 'Price', 'Price per', 'Offers', 'Ingredients', 'Nutrition']:
                         product_attributes[key] = attribute_web_element.text
                     if key in ['Usage', 'Brand details']:
-                        product_attributes[key] = self._scrape_hidden_attributes(attribute_web_element, value)
+                        product_attributes[key] = self._scrape_hidden_attributes(attribute_web_element)
                     if key == 'Rating':
                         product_attributes[key] = attribute_web_element.get_attribute('title').split(' ')[1]
                     if key == 'Out of Stock':
                        product_attributes[key] = True 
-                    # if key == 'Image links':
-                    #    product_attributes[key] = self._scrape_image_links(attribute_web_element, value)  
+                    if key == 'Image links':
+                       product_attributes[key] = self._scrape_image_links(attribute_web_element)  
                 else:
                     product_attributes[key] = False if key == 'Out of Stock' else None                                                              
             product_details[OcadoScraper._get_sku_from_url(url)] = product_attributes
@@ -109,7 +101,11 @@ class OcadoScraper:
                 break
         self.product_data[category_name] = product_details
 
-    def _scrape_hidden_attributes(self, web_elements, xpath):
+    def _scrape_image_links(self, web_elements):
+        image_list = [element.get_attribute('src').replace("75x75", "1280x1280") for element in web_elements]
+        return image_list
+        
+    def _scrape_hidden_attributes(self, web_elements):
         text_in_hidden_elements = [element.get_attribute('textContent') for element in web_elements]
         return (' '.join(str(text) for text in text_in_hidden_elements))        
 
@@ -124,7 +120,7 @@ class OcadoScraper:
                 The web element or None if nothing found.
         """
         try:
-            if attribute_name in ['Usage', 'Brand details']:
+            if attribute_name in ['Usage', 'Brand details', 'Image links']:
                 return self.driver.find_elements(By.XPATH, xpath)
             return self.driver.find_element(By.XPATH, xpath)
         except:
@@ -149,7 +145,8 @@ class OcadoScraper:
                            'Usage' : '/html/body/div[1]/div[1]/div[3]/article/section[5]/div[2]/div[2]/div[2]//div/div',
                            'Nutrition' : '//*[@id="productInformation"]/div[3]/div/div/div[2]/div/div/div/div/table/tbody',
                            'Brand details' : '//html/body/div[1]/div[1]/div[3]/article/section[5]/div[2]/div[3]/div[2]//div/div',
-                           'Out of Stock' : '//*[@id="overview"]/section[2]/div[2]/h1'   
+                           'Out of Stock' : '//*[@id="overview"]/section[2]/div[2]/h1',
+                           'Image links' : '//*[@class="bop-gallery__miniatures"]//img'   
                          } 
         return product_xpaths
     
@@ -267,14 +264,6 @@ ocado = OcadoScraper(True)
 categories_to_scrape = ["Baby, Parent & Kids"]
 ocado.scrape_products(categories_to_scrape)
 print(len(ocado.product_links["Baby, Parent & Kids"]))
-
-
-
-# %%
-def _get_image_links(self):
-    images = driver.find_elements(By.XPATH, '//*[@class="bop-gallery__miniatures"]//img')
-    for image in images:
-        print(image.get_attribute('src'))
         
 #%%
 
