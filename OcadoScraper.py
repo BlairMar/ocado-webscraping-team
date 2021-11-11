@@ -52,7 +52,7 @@ class OcadoScraper:
         for category_name, category_url in self.category_urls.items():
             number_of_products = self._get_number_of_products(category_url)
             self.category_urls[category_name] += '?display=' + number_of_products
-        self.save_category_urls()
+        self._save_data("category_urls", self.category_urls, 'w')
 
     def _get_product_links(self, category_name):
         number_of_products_in_category = self.category_urls[category_name].split('=')[-1]
@@ -95,8 +95,8 @@ class OcadoScraper:
                 else:
                     product_attributes[key] = False if key == 'Out of Stock' else None                                                              
             product_details[OcadoScraper._get_sku_from_url(url)] = product_attributes
-            # if i == 10:  ### get the first i products - just for testing
-            #     break
+            if i == 10:  ### get the first i products - just for testing
+                break
         self.product_data[category_name] = product_details
 
     def _scrape_hidden_attributes(self, xpath):
@@ -156,15 +156,21 @@ class OcadoScraper:
             self._get_product_data(category)
             if i == 3:
                 break
-        self.save_product_links()
+        # self.save_product_links()
+        self._save_data("product_links", self.product_links)
+        self._save_data("product_data", self.product_data)
+ 
+    def _save_data(self, filename, data, mode='a'):
+        with open(f'./data/{filename}', mode=mode) as f:
+            json.dump(data, f) 
 
-    def save_product_links(self, mode='a'):
-        with open('./data/product_links', mode=mode) as f:
-            json.dump(self.product_links, f)
+    # def save_product_links(self, mode='a'):
+    #     with open('./data/product_links', mode=mode) as f:
+    #         json.dump(self.product_links, f)
     
-    def save_category_urls(self, mode='w'):
-        with open('./data/category_urls', mode=mode) as f:
-            json.dump(self.category_urls, f)
+    # def save_category_urls(self, mode='a'):
+    #     with open('./data/category_urls', mode=mode) as f:
+    #         json.dump(self.category_urls, f)
         
     def zoom_page(self, zoom_percentage=100):
         self.driver.execute_script(f"document.body.style.zoom='{zoom_percentage}%'")
@@ -235,7 +241,7 @@ class OcadoScraper:
     
 if __name__ == '__main__':
 
-    ocado = OcadoScraper()
+    # ocado = OcadoScraper()
 
 
     pass
@@ -250,7 +256,7 @@ print(len(ocado.product_links["Bakery"]))
 #%%
 ocado._get_product_links("Health, Beauty & Personal Care")  
 #%%
-ocado = OcadoScraper()
+ocado = OcadoScraper(True)
 categories_to_scrape = ["Baby, Parent & Kids"]
 ocado.scrape_products(categories_to_scrape)
 print(len(ocado.product_links["Baby, Parent & Kids"]))
