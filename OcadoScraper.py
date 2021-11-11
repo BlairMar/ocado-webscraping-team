@@ -151,11 +151,9 @@ class OcadoScraper:
     def scrape_products(self, categories="ALL"):
         if categories == "ALL":
             categories = self.category_links.keys()        
-        for i, category in enumerate(categories):
+        for category in categories:
             self._get_product_links(category)
             self._get_product_data(category)
-            if i == 3:
-                break
         # self.save_product_links()
         self._save_data("product_links", self.product_links)
         self._save_data("product_data", self.product_data)
