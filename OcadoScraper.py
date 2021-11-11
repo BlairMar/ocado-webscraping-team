@@ -102,8 +102,17 @@ class OcadoScraper:
         self.product_data[category_name] = product_details
 
     def _scrape_image_links(self, web_elements):
-        image_list = [element.get_attribute('src').replace("75x75", "1280x1280") for element in web_elements]
-        return image_list
+        image_set = set() #use a set as if we have more than one image the large image will be counted twice
+        for image in web_elements:
+            image_src = image.get_attribute('src')
+            if "640x640" in image_src:
+                image_set.add(image_src.replace("640x640", "1280x1280"))
+            else: 
+                image_set.add(image_src.replace("75x75", "1280x1280"))
+        # can do the following intstead of if else above
+        # image_set.add(image_src.replace("640x640", "1280x1280")) if "640x640" in image_src else image_set.add(image_src.replace("75x75", "1280x1280"))
+        image_list = list(image_set)
+        return image_list 
         
     def _scrape_hidden_attributes(self, web_elements):
         text_in_hidden_elements = [element.get_attribute('textContent') for element in web_elements]
@@ -146,9 +155,9 @@ class OcadoScraper:
                            'Nutrition' : '//*[@id="productInformation"]/div[3]/div/div/div[2]/div/div/div/div/table/tbody',
                            'Brand details' : '//html/body/div[1]/div[1]/div[3]/article/section[5]/div[2]/div[3]/div[2]//div/div',
                            'Out of Stock' : '//*[@id="overview"]/section[2]/div[2]/h1',
-                           'Image links' : '//*[@class="bop-gallery__miniatures"]//img'   
+                           'Image links' : '//*[@class="bop-gallery__miniatures"]//img | /html/body/div[1]/div[1]/div[3]/article/section[1]/div/div/div[1]/img'   
                          } 
-        return product_xpaths
+        return product_xpaths    
     
     @staticmethod
     def _get_sku_from_url(url):
@@ -160,7 +169,6 @@ class OcadoScraper:
         for category in categories:
             self._get_product_links(category)
             self._get_product_data(category)
-        # self.save_product_links()
         self._save_data("product_links", self.product_links)
         self._save_data("product_data", self.product_data)
  
@@ -265,5 +273,13 @@ categories_to_scrape = ["Baby, Parent & Kids"]
 ocado.scrape_products(categories_to_scrape)
 print(len(ocado.product_links["Baby, Parent & Kids"]))
         
-#%%
+# %%
+product id 556743011
 
+'or' in image xpath
+# images = self.driver.find_elements(By.XPATH, '//*[@class="bop-gallery__image"]//img')
+# image_list = []
+# for image in images:
+#     print(image.get_attribute('src'))
+#     image_list.append(image.get_attribute('src').replace("75x75", "1280x1280"))
+#     print(url, image_list)
