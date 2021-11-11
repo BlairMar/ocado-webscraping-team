@@ -109,9 +109,10 @@ class OcadoScraper:
                 image_set.add(image_src.replace("640x640", "1280x1280"))
             else: 
                 image_set.add(image_src.replace("75x75", "1280x1280"))
-        # can do the following intstead of if else above
+        # can replace if else above by the following? 
         # image_set.add(image_src.replace("640x640", "1280x1280")) if "640x640" in image_src else image_set.add(image_src.replace("75x75", "1280x1280"))
         image_list = list(image_set)
+        #### now download the images? ### 
         return image_list 
         
     def _scrape_hidden_attributes(self, web_elements):
@@ -175,14 +176,6 @@ class OcadoScraper:
     def _save_data(self, filename, data, mode='a'):
         with open(f'./data/{filename}', mode=mode) as f:
             json.dump(data, f) 
-
-    # def save_product_links(self, mode='a'):
-    #     with open('./data/product_links', mode=mode) as f:
-    #         json.dump(self.product_links, f)
-    
-    # def save_category_urls(self, mode='a'):
-    #     with open('./data/category_urls', mode=mode) as f:
-    #         json.dump(self.category_urls, f)
         
     def zoom_page(self, zoom_percentage=100):
         self.driver.execute_script(f"document.body.style.zoom='{zoom_percentage}%'")
@@ -273,13 +266,3 @@ categories_to_scrape = ["Baby, Parent & Kids"]
 ocado.scrape_products(categories_to_scrape)
 print(len(ocado.product_links["Baby, Parent & Kids"]))
         
-# %%
-product id 556743011
-
-'or' in image xpath
-# images = self.driver.find_elements(By.XPATH, '//*[@class="bop-gallery__image"]//img')
-# image_list = []
-# for image in images:
-#     print(image.get_attribute('src'))
-#     image_list.append(image.get_attribute('src').replace("75x75", "1280x1280"))
-#     print(url, image_list)
