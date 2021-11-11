@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 import requests
 import time
 import json
+import os
 from pprint import pprint
 ###
 #%%
@@ -76,10 +77,11 @@ class OcadoScraper:
         links = [url.get_attribute('href') for url in urls_web_object]
         return links
 
-    def _get_product_data(self, category_name):
+    def _get_product_data(self, category_name, download_images):
         product_details = {} 
         for i, url in enumerate(self.product_links[category_name]): ## remove enumerate 
             self.driver.get(url)
+            product_sku = OcadoScraper._get_sku_from_url(url)
             product_attributes = {}
             for key, value in OcadoScraper._get_attribute_xpaths().items():
                 attribute_web_element = self._get_attribute_by_xpath_or_none(key, value)
@@ -87,35 +89,52 @@ class OcadoScraper:
                     if key in ['Name', 'Product Information', 'Price', 'Price per', 'Offers', 'Ingredients', 'Nutrition']:
                         product_attributes[key] = attribute_web_element.text
                     if key in ['Usage', 'Brand details']:
-                        product_attributes[key] = self._scrape_hidden_attributes(attribute_web_element)
+                        product_attributes[key] = OcadoScraper._scrape_hidden_attributes(attribute_web_element)
                     if key == 'Rating':
                         product_attributes[key] = attribute_web_element.get_attribute('title').split(' ')[1]
                     if key == 'Out of Stock':
                        product_attributes[key] = True 
                     if key == 'Image links':
-                       product_attributes[key] = self._scrape_image_links(attribute_web_element)  
+                       product_attributes[key] = self._scrape_image_links(attribute_web_element, category_name, product_sku, download_images)  
                 else:
                     product_attributes[key] = False if key == 'Out of Stock' else None                                                              
-            product_details[OcadoScraper._get_sku_from_url(url)] = product_attributes
-            if i == 10:  ### get the first i products - just for testing
+            product_details[product_sku] = product_attributes
+            if i == 3:  ### get the first i+1 products - just for testing
                 break
         self.product_data[category_name] = product_details
 
-    def _scrape_image_links(self, web_elements):
-        image_set = set() #use a set as if we have more than one image the large image will be counted twice
+    def _scrape_image_links(self, web_elements, category_name, product_sku, download_images):
+        image_set = set() # use a set as if we have more than one image the large image will be counted twice
         for image in web_elements:
             image_src = image.get_attribute('src')
             if "640x640" in image_src:
                 image_set.add(image_src.replace("640x640", "1280x1280"))
             else: 
                 image_set.add(image_src.replace("75x75", "1280x1280"))
-        # can replace if else above by the following? 
+        # can replace if else above by the following:
         # image_set.add(image_src.replace("640x640", "1280x1280")) if "640x640" in image_src else image_set.add(image_src.replace("75x75", "1280x1280"))
         image_list = list(image_set)
-        #### now download the images? ### 
+        if download_images:
+            path = f'./data/images/{category_name}/{product_sku}'
+            OcadoScraper._create_image_folder_if_not_exist(path)
+            for image_url in image_list:
+                image_number = image_url.split("_")[1] # image number 0 is main picture
+                OcadoScraper._download_img(image_url, path + f'/{image_number}.jpg')
         return image_list 
-        
-    def _scrape_hidden_attributes(self, web_elements):
+    
+    @staticmethod
+    def _create_image_folder_if_not_exist(path):
+        if not os.path.exists(path):
+            os.makedirs(path)
+                
+    @staticmethod
+    def _download_img(url, path):
+        img_data = requests.get(url).content
+        with open(path, 'wb') as handler:
+            handler.write(img_data)
+    
+    @staticmethod
+    def _scrape_hidden_attributes(web_elements):
         text_in_hidden_elements = [element.get_attribute('textContent') for element in web_elements]
         return (' '.join(str(text) for text in text_in_hidden_elements))        
 
@@ -164,12 +183,12 @@ class OcadoScraper:
     def _get_sku_from_url(url):
         return url.split("-")[-1]
 
-    def scrape_products(self, categories="ALL"):
+    def scrape_products(self, categories="ALL", download_images=False):
         if categories == "ALL":
             categories = self.category_links.keys()        
         for category in categories:
             self._get_product_links(category)
-            self._get_product_data(category)
+            self._get_product_data(category, download_images)
         self._save_data("product_links", self.product_links)
         self._save_data("product_data", self.product_data)
  
@@ -180,75 +199,8 @@ class OcadoScraper:
     def zoom_page(self, zoom_percentage=100):
         self.driver.execute_script(f"document.body.style.zoom='{zoom_percentage}%'")
 
-    def func2(self):
-        """
-        Gets Browse shop category URLs
-        """
-    
-    def func3(self):
-        """
-        Gets inner category urls from each Browse shop category
-        """
-    
-    def func4(self):
-        """
-        Opens URL in new tab
-        """
 
-    def func5(self):
-        """
-        Closes current tab (This function might be redundant)
-        """
-
-    def func6_0(self):
-        """
-        Gets number of items that can be displayed on page
-        """
-
-    def func6(self):
-        """
-        Displays all items on page
-        """
-
-    def func7(self):
-        """
-        Collects all the item URLs on a page
-        """
-    
-    def func8(self):
-        """
-        Gets images from item page
-        """
-    
-    def func9_0(self):
-        """
-        Gets price, description, SKU, reviews from item page
-        """
-    def func9(self):
-        """
-        Scrapes an item's page
-        """
-
-    def func10(self):
-        """
-        Creates folder in which to store data dictionaries if the folder doesn't already exist
-        """
-    
-    def func11(self):
-        """
-        Saves data into dictionary
-        """
-    
-    def func12(self):
-        """
-        Saves dictionary in a file
-        """
-    
 if __name__ == '__main__':
-
-    # ocado = OcadoScraper()
-
-
     pass
     # ocado = OcadoScraper() 
     # ocado.scrape_products()
@@ -256,7 +208,7 @@ if __name__ == '__main__':
 #%%
 ocado = OcadoScraper()
 categories_to_scrape = ["Bakery"]
-ocado.scrape_products(categories_to_scrape)
+ocado.scrape_products(categories_to_scrape, True)
 print(len(ocado.product_links["Bakery"]))
 #%%
 ocado._get_product_links("Health, Beauty & Personal Care")  
@@ -266,3 +218,4 @@ categories_to_scrape = ["Baby, Parent & Kids"]
 ocado.scrape_products(categories_to_scrape)
 print(len(ocado.product_links["Baby, Parent & Kids"]))
         
+    
