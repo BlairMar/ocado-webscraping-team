@@ -99,7 +99,7 @@ class OcadoScraper:
                 else:
                     product_attributes[key] = False if key == 'Out of Stock' else None                                                              
             product_details[product_sku] = product_attributes
-            if i == 3:  ### get the first i+1 products - just for testing
+            if i == 20:  ### get the first i+1 products - just for testing
                 break
         self.product_data[category_name] = product_details
 
@@ -111,17 +111,19 @@ class OcadoScraper:
                 image_set.add(image_src.replace("640x640", "1280x1280"))
             else: 
                 image_set.add(image_src.replace("75x75", "1280x1280"))
-        # can replace if else above by the following:
-        # image_set.add(image_src.replace("640x640", "1280x1280")) if "640x640" in image_src else image_set.add(image_src.replace("75x75", "1280x1280"))
         image_list = list(image_set)
         if download_images:
-            path = f'./data/images/{category_name}/{product_sku}'
-            OcadoScraper._create_image_folder_if_not_exist(path)
-            for image_url in image_list:
-                image_number = image_url.split("_")[1] # image number 0 is main picture
-                OcadoScraper._download_img(image_url, path + f'/{image_number}.jpg')
+            OcadoScraper._download_all_images(image_list, category_name, product_sku)
         return image_list 
     
+    @staticmethod
+    def _download_all_images(image_list, category_name, product_sku):
+        path = f'./data/images/{category_name}/{product_sku}'
+        OcadoScraper._create_image_folder_if_not_exist(path)
+        for image_url in image_list:
+            image_number = image_url.split("_")[1] # image number 0 is main picture
+            OcadoScraper._download_img(image_url, path + f'/{image_number}.jpg')
+        
     @staticmethod
     def _create_image_folder_if_not_exist(path):
         if not os.path.exists(path):
@@ -185,13 +187,18 @@ class OcadoScraper:
 
     def scrape_products(self, categories="ALL", download_images=False):
         if categories == "ALL":
-            categories = self.category_links.keys()        
+            categories = self.category_urls.keys()        
         for category in categories:
             self._get_product_links(category)
             self._get_product_data(category, download_images)
         self._save_data("product_links", self.product_links)
         self._save_data("product_data", self.product_data)
+        print(f"Product links and product data from the {categories} categories saved successfully")
  
+    # def scrape_all_products(self):
+    #     for category in self.category_urls.keys():
+    #         scrape_sub_categorys(category)
+
     def _save_data(self, filename, data, mode='a'):
         with open(f'./data/{filename}', mode=mode) as f:
             json.dump(data, f) 
@@ -217,5 +224,9 @@ ocado = OcadoScraper(True)
 categories_to_scrape = ["Baby, Parent & Kids"]
 ocado.scrape_products(categories_to_scrape)
 print(len(ocado.product_links["Baby, Parent & Kids"]))
-        
+
+#%%
+ocado = OcadoScraper()
+ocado.scrape_all_products()
     
+# %%
