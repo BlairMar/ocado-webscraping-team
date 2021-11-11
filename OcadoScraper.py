@@ -51,12 +51,12 @@ class OcadoScraper:
         self.category_urls = {category.text : category.get_attribute('href').replace("?hideOOS=true", "") for category in categories_web_object}
         for category_name, category_url in self.category_urls.items():
             number_of_products = self._get_number_of_products(category_url)
-            self.category_urls[category_name] += '?display=' + number_of_products + '0'
+            self.category_urls[category_name] += '?display=' + number_of_products
         self._save_data("category_urls", self.category_urls, 'w')
 
     def _get_product_links(self, category_name):
         number_of_products_in_category = self.category_urls[category_name].split('=')[-1]
-        self.driver.get(self.category_urls[category_name])
+        self.driver.get(self.category_urls[category_name] + '0')
         self.product_links[category_name] = self._scroll_to_get_all_product_links(number_of_products_in_category, 30)
 
     def _get_number_of_products(self, category_url):
