@@ -179,8 +179,8 @@ if __name__ == '__main__':
 ocado = OcadoScraper()
 # categories_to_scrape = ["Clothing & Accessories", "Bakery"]
 categories_to_scrape = ["Clothing & Accessories", 'Bakery']
-ocado.scrape_products(categories_to_scrape, True)
-# ocado.scrape_products(categories_to_scrape)
+# ocado.scrape_products(categories_to_scrape, True)
+ocado.scrape_products(categories_to_scrape)
 # print(len(ocado.product_urls["Clothing & Accessories"]))
 #%%
 ocado = OcadoScraper()
@@ -189,3 +189,4 @@ ocado.categories_available_to_scrape()
 
 # %%
 ocado.categories_available_to_scrape(False)
+# %%
