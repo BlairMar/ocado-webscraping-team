@@ -101,23 +101,21 @@ class OcadoScraper:
     
 ##############################################################################################################################
 # This function is called by the PUBLIC function scrape_products() and scrapes the information and images for 
-# all products in the category and puts them in the product_data dictionary
- 
+# all products in the category and puts them in the product_data dictionary 
     def _scrape_product_data_for_category(self, category_name, download_images):
+        product_details = {} 
         for i, url in enumerate(self.product_urls[category_name]): ## remove enumerate 
-            self._scrape_product_data(url, download_images)
+            self._scrape_product_data(url, product_details, download_images)
             if i == 10:  ### get the first i+1 products - just for testing
                 break
         self.product_data[category_name] = product_details
       
-    def _scrape_product_data(self, url, download_images):
-        product_details = {} 
+    def _scrape_product_data(self, url, product_details, download_images):
         product = Product(url)
         sku = product.get_sku()
         product_details[sku] = product.scrape_product_data(self.driver) 
         if download_images:
-            product.download_images()
-        return product_details    
+            product.download_images()    
                     
 ##################################################################################################################  
     # function to read data from a json file
@@ -169,9 +167,10 @@ class OcadoScraper:
 
     def scrape_product(self, url, download_images):
         self.driver.get(url)
-        self._accept_cookies()
-        return self._scrape_product_data(url, download_images)
-         
+        self._accept_cookies
+        product_data = {}
+        self._scrape_product_data(url, product_data, download_images)
+        return product_data
         
 ####################################################################### 
 # This is not being used right now       
