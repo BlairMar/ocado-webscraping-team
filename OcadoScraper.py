@@ -103,18 +103,22 @@ class OcadoScraper:
 # This function is called by the PUBLIC function scrape_products() and scrapes the information and images for 
 # all products in the category and puts them in the product_data dictionary
  
-    def _scrape_product_data(self, category_name, download_images):
-        product_details = {} 
+    def _scrape_product_data_for_category(self, category_name, download_images):
         for i, url in enumerate(self.product_urls[category_name]): ## remove enumerate 
-            product = Product(url)
-            sku = product.get_sku()
-            product_details[sku] = product.scrape_product_data(self.driver) 
-            if download_images:
-                product.download_images()
+            self._scrape_product_data(url, download_images)
             if i == 10:  ### get the first i+1 products - just for testing
                 break
         self.product_data[category_name] = product_details
-              
+      
+    def _scrape_product_data(self, url, download_images):
+        product_details = {} 
+        product = Product(url)
+        sku = product.get_sku()
+        product_details[sku] = product.scrape_product_data(self.driver) 
+        if download_images:
+            product.download_images()
+        return product_details    
+                    
 ##################################################################################################################  
     # function to read data from a json file
     @staticmethod
@@ -157,12 +161,18 @@ class OcadoScraper:
         for category in categories:
             #### now read the data from the json dict into product_data attribute, clear the data from the json 
             self._scrape_product_urls(category)
-            self._scrape_product_data(category, download_images)
+            self._scrape_product_data_for_category(category, download_images)
             OcadoScraper._save_data("product_data", self.product_data) #save data into the file after each scrape of a category
         # save each time we scrape - put inside for loop
         OcadoScraper._save_data("product_urls", self.product_urls)     
         print(f"Product urls and product data from the {categories} categories saved successfully")
- 
+
+    def scrape_product(self, url, download_images):
+        self.driver.get(url)
+        self._accept_cookies()
+        return self._scrape_product_data(url, download_images)
+         
+        
 ####################################################################### 
 # This is not being used right now       
     def zoom_page(self, zoom_percentage=100):
@@ -184,9 +194,12 @@ ocado.scrape_products(categories_to_scrape)
 # print(len(ocado.product_urls["Clothing & Accessories"]))
 #%%
 ocado = OcadoScraper()
+url = 'https://www.ocado.com/products/gail-s-seeded-sourdough-540647011'
+data = ocado.scrape_product(url, False)
+pprint(data)
+
 #%%
 ocado.categories_available_to_scrape()
 
 # %%
-ocado.categories_available_to_scrape(False)
-# %%
+
