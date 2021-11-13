@@ -2,6 +2,7 @@
 import os
 import requests
 
+
 # Product Images class used by the Scraper class 
 # represents a list of the image urls associated with a product
 class Product_Images:
