@@ -127,7 +127,6 @@ class OcadoScraper:
             driver.execute_script(f"window.scrollTo(0, document.body.scrollHeight*{(i+1)/number_of_scrolls});")
             time.sleep(0.5)
             urls_temp_web_object.extend(driver.find_elements(By.XPATH, '//*[@id="main-content"]/div[2]/div[2]/ul/li/div[2]/div[1]/a'))
-        driver.close()    
         urls_web_object = list(set(urls_temp_web_object))
         # urls_web_object = self.driver.find_elements(By.XPATH, '//*[@id="main-content"]/div[2]/div[2]/ul/li/div[2]/div[1]/a')
         urls = [url.get_attribute('href') for url in urls_web_object]
