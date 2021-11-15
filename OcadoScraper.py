@@ -83,8 +83,7 @@ class OcadoScraper:
     def _scrape_product_urls(self, category_name):
         number_of_products_in_category = self.category_urls[category_name].split('=')[-1]
         self.driver.get(self.category_urls[category_name])
-        # self.product_urls[category_name] = self._scroll_to_get_all_product_urls(number_of_products_in_category, 30)
-        self.product_urls[category_name] = self._scroll_to_get_all_product_urls(30, 30)
+        self.product_urls[category_name] = self._scroll_to_get_all_product_urls(number_of_products_in_category, 30)
 
     # UTILITY function for the above function to scroll the page and get all the product urls on the page
     def _scroll_to_get_all_product_urls(self, number_of_products, number_of_items_in_each_scroll):
