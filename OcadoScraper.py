@@ -86,7 +86,7 @@ class OcadoScraper:
     #The following 2 functions are used to populate the product urls dictionary for the specified category
     
     # This function is called by the PUBLIC function scrape_products() and populates the product_urls dictionary for the specified category
-    def _scrape_product_urls(self, category_url, threads_number=4):
+    def _scrape_product_urls(self, category_url, category_name, threads_number=4):
         s = datetime.now()
         number_of_products_on_page = int(category_url.split('=')[-1])
         if number_of_products_on_page < 1500:
@@ -110,11 +110,11 @@ class OcadoScraper:
             data = []
             for thread in thread_list:
                 data.extend(thread.product_urls)
-            self.product_urls[category_url] = list(set(data))
+            self.product_urls[category_name] = list(set(data))
         else:
             self.driver.get(category_url)
             OcadoScraper._accept_cookies(self.driver)
-            self.product_urls[category_url] = OcadoScraper._scroll_to_get_product_urls(self.driver, number_of_scrolls)
+            self.product_urls[category_name] = OcadoScraper._scroll_to_get_product_urls(self.driver, number_of_scrolls)
         print(datetime.now()-s)
 
     # UTILITY function for the above function to scroll the page and get all the product urls on the page
@@ -237,10 +237,11 @@ ocado.categories_available_to_scrape()
 #test multithreading for scrape product urls
 ocado = OcadoScraper()
 category1 = 'Clothing & Accessories'
+category3 = 'Food Cupboard'
 url1 = 'https://www.ocado.com/browse/clothing-accessories-148232?display=943'
 url2 = 'https://www.ocado.com/browse/christmas-317740?display=4958'
 url3 ='https://www.ocado.com/browse/food-cupboard-20424?display=13989'
-ocado._scrape_product_urls(url3, threads_number=3)
+ocado._scrape_product_urls(url3, category3 threads_number=3)
 #%%
 print(len(ocado.product_urls[url3]))
 
