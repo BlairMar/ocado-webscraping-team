@@ -41,5 +41,6 @@ class Product_Images:
         for image_url in self.image_src_list:
             image_number = image_url.split("_")[1] # image number 0 is main picture
             self._download_img(image_url, path + f'/{image_number}.jpg')
+        return path
          
 # %%
