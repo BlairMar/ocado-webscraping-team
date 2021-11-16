@@ -196,8 +196,7 @@ class OcadoScraper:
         path = "./data/product_data"
         if os.path.exists(path):
             temp_dict = OcadoScraper._read_data(path)
-            category_dict = temp_dict[category_name]
-            if temp_dict[category_name]:
+            if category_name in temp_dict.keys():
                 return len(temp_dict[category_name])
         print("No products saved for this category")
                                
@@ -235,7 +234,7 @@ if __name__ == '__main__':
 
 #%%
 ocado = OcadoScraper()
-categories_to_scrape = ['Frozen Food']
+categories_to_scrape = [Toys, Games & Books, Baby, Parent & Kids]
 ocado.scrape_products(categories_to_scrape)
 # print(len(ocado.product_urls["Clothing & Accessories"]))
     #%%
@@ -243,25 +242,15 @@ ocado = OcadoScraper()
 url = 'https://www.ocado.com/products/shatterproof-silver-multi-finish-baubles-pack-of-4-558717011'
 data = ocado.scrape_product(url, False)
 pprint(data)
-
 #%%
 ocado = OcadoScraper()
 ocado.categories_available_to_scrape()
-#%% 
-ocado = OcadoScraper()
-# ocado.delete_saved_product_data()
-
-#%% 
-ocado = OcadoScraper()
-
-#%%
 ocado.get_categories_with_saved_product_data()
-#%%
-ocado = OcadoScraper()
 ocado.get_categories_without_saved_product_data()
-
-# %%
 ocado.scrape_products(ocado.get_categories_without_saved_product_data())
 
-# %%
-# %%
+#%% 
+saved_categories = ocado.get_categories_with_saved_product_data()
+for category in saved_categories:
+    print(f"{category} : {ocado.number_of_products_saved(category)}")
+
