@@ -141,10 +141,6 @@ class OcadoScraper:
         if not os.path.exists(path):
             os.makedirs(path)
             
-    def _path_exists(path):
-        return True if os.path.exists(path) else False
-             
-
 ###################################################################################################################
     # PUBLIC FUNCTIONS
     
@@ -174,7 +170,6 @@ class OcadoScraper:
             return
                     
     def get_categories_without_saved_product_data(self):
-        print('test')
         all_categories = {}
         path = "./data/category_urls"
         if os.path.exists(path):
@@ -238,7 +233,7 @@ if __name__ == '__main__':
 
 #%%
 ocado = OcadoScraper()
-categories_to_scrape = ["Clothing & Accessories", "Bakery", 'Frozen Food']
+categories_to_scrape = ['Frozen Food']
 ocado.scrape_products(categories_to_scrape)
 # print(len(ocado.product_urls["Clothing & Accessories"]))
     #%%
