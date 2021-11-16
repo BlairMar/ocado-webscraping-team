@@ -140,7 +140,7 @@ class OcadoScraper:
     def _create_folder(path):
         if not os.path.exists(path):
             os.makedirs(path)
-            
+                        
 ###################################################################################################################
     # PUBLIC FUNCTIONS
     
@@ -191,13 +191,15 @@ class OcadoScraper:
         else: 
             print("Can not delete the file as it doesn't exist")
     
+    @staticmethod
     def number_of_products_saved(category_name):
         path = "./data/product_data"
         if os.path.exists(path):
             temp_dict = OcadoScraper._read_data(path)
-            return len(temp_dict[category_name])
-        else: 
-            print("No products saved for this category")
+            category_dict = temp_dict[category_name]
+            if temp_dict[category_name]:
+                return len(temp_dict[category_name])
+        print("No products saved for this category")
                                
     # public function to scrape the products. Pass in a list of categories as a param. If there is saved product data this will be overwritten if we scrape again for the category
     def scrape_products(self, categories="ALL", download_images=False):
@@ -247,7 +249,7 @@ ocado = OcadoScraper()
 ocado.categories_available_to_scrape()
 #%% 
 ocado = OcadoScraper()
-ocado.delete_saved_product_data()
+# ocado.delete_saved_product_data()
 
 #%% 
 ocado = OcadoScraper()
@@ -260,5 +262,6 @@ ocado.get_categories_without_saved_product_data()
 
 # %%
 ocado.scrape_products(ocado.get_categories_without_saved_product_data())
+
 # %%
 # %%
