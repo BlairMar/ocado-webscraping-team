@@ -55,7 +55,11 @@ class OcadoScraper:
         if scrape_categories:
             self._scrape_category_urls()
         else:
-            self.category_urls = OcadoScraper.read_data("./data/category_urls")
+            try:
+                self.category_urls = OcadoScraper._read_data("./data/category_urls")
+            except Exception as e:
+                print("Error: No stored data for category urls, re-run the scraper with scrape_categories=True")
+                return
 
     # UTILITY function for above function
     # only used by the function _get_categories() to scrape the category urls (and then save to a file)
@@ -67,7 +71,7 @@ class OcadoScraper:
         for category_name, category_url in self.category_urls.items():
             number_of_products = self._get_number_of_products(category_url)
             self.category_urls[category_name] += '?display=' + number_of_products
-        OcadoScraper._save_data("category_urls", self.category_urls, 'w')
+        OcadoScraper._save_data("category_urls", self.category_urls)
 
     # UTILITY function for above function
     # only used in the function _scrape_category_urls() - gets the number of products in a category
@@ -105,8 +109,8 @@ class OcadoScraper:
         product_details = {} 
         for i, url in enumerate(self.product_urls[category_name]): ## remove enumerate 
             self._scrape_product_data(url, product_details, download_images)
-            if i == 10:  ### get the first i+1 products - just for testing
-                break
+            # if i == 10:  ### get the first i+1 products - just for testing
+            #     break
         self.product_data[category_name] = product_details
       
     def _scrape_product_data(self, url, product_details, download_images):
@@ -119,17 +123,27 @@ class OcadoScraper:
 ##################################################################################################################  
     # function to read data from a json file
     @staticmethod
-    def read_data(path):
-        with open(path) as f:
-            data = f.read()
-            return json.loads(data) 
+    def _read_data(path):
+            with open(path) as f:
+                data = f.read()
+                return json.loads(data) 
   
     # function to dump the data to a json file. Used to save the category_urls, product_links and product_data dictionarys to file
     @staticmethod
-    def _save_data(filename, data, mode='a'):
-        path = f'./data/{filename}'
-        with open(path, mode=mode) as f:
+    def _save_data(filename, data, mode='w', indent=None):
+        path = './data/'
+        OcadoScraper._create_folder(path)
+        with open(path + f'{filename}', mode=mode) as f:
             json.dump(data, f) 
+            
+    @staticmethod
+    def _create_folder(path):
+        if not os.path.exists(path):
+            os.makedirs(path)
+            
+    def _path_exists(path):
+        return True if os.path.exists(path) else False
+             
 
 ###################################################################################################################
     # PUBLIC FUNCTIONS
@@ -137,32 +151,72 @@ class OcadoScraper:
     # returns a list of categories available to scrape on the ocado website
     # if from_file=True returns a list of saved categories from a previous scrape else gets the categories from the website
     def categories_available_to_scrape(self, from_file=True):
+        path = "./data/category_urls"
         if from_file == True:
-            temp_dict = OcadoScraper.read_data("./data/category_urls")
-            return list(temp_dict.keys())
+            if os.path.exists(path):
+                temp_dict = OcadoScraper._read_data(path)
+                return list(temp_dict.keys())
+            else: 
+                print("Error: No stored data for category urls, re-run this function with from_file=False")
+                return                 
         else:
             self._get_categories(True)
             return list(self.category_urls.keys())
-               
+     
+    @staticmethod           
     def get_categories_with_saved_product_data():
-        pass
-    # read the json dict 
+        path = "./data/product_data"
+        if os.path.exists(path):
+            temp_dict = OcadoScraper._read_data(path)
+            return list(temp_dict.keys())
+        else:
+            print('No categories with saved product data')
+            return
+                    
+    def get_categories_without_saved_product_data(self):
+        print('test')
+        all_categories = {}
+        path = "./data/category_urls"
+        if os.path.exists(path):
+            all_categories = OcadoScraper._read_data(path).keys()
+        else: 
+            self._scrape_category_urls()
+            all_categories = self.category_urls.keys()
+        stored_data = OcadoScraper.get_categories_with_saved_product_data()
+        if stored_data:
+            return list(set(all_categories).difference(set(stored_data)))
+        else:
+            return list(all_categories)
+                        
+    @staticmethod
+    def delete_saved_product_data():
+        path = "./data/product_data"
+        if os.path.exists(path):
+            os.remove(path)
+        else: 
+            print("Can not delete the file as it doesn't exist")
     
-    def get_categories_without_saved_product_data():
-        pass
-    
+    def number_of_products_saved(category_name):
+        path = "./data/product_data"
+        if os.path.exists(path):
+            temp_dict = OcadoScraper._read_data(path)
+            return len(temp_dict[category_name])
+        else: 
+            print("No products saved for this category")
+                               
     # public function to scrape the products. Pass in a list of categories as a param. If there is saved product data this will be overwritten if we scrape again for the category
     def scrape_products(self, categories="ALL", download_images=False):
         if categories == "ALL":
             categories = self.category_urls.keys()        
         for category in categories:
-            #### now read the data from the json dict into product_data attribute, clear the data from the json 
+            path = "./data/product_data"
+            if os.path.exists(path):            
+                temp_dict = OcadoScraper._read_data(path) #read the data from the json dict into product_data dict attribute
+                self.product_data = temp_dict
             self._scrape_product_urls(category)
             self._scrape_product_data_for_category(category, download_images)
-            OcadoScraper._save_data("product_data", self.product_data) #save data into the file after each scrape of a category
-        # save each time we scrape - put inside for loop
-        OcadoScraper._save_data("product_urls", self.product_urls)     
-        print(f"Product urls and product data from the {categories} categories saved successfully")
+            OcadoScraper._save_data("product_data", self.product_data) #save the product_data dict into a json file after each scrape of a category, overwriting the file if it exists 
+            print(f"Product data from the {category} category saved successfully")
 
     def scrape_product(self, url, download_images):
         self.driver.get(url)
@@ -177,7 +231,6 @@ class OcadoScraper:
         self.driver.execute_script(f"document.body.style.zoom='{zoom_percentage}%'")
 #######################################################################
 
-
 if __name__ == '__main__':
     pass
     # ocado = OcadoScraper() 
@@ -185,19 +238,32 @@ if __name__ == '__main__':
 
 #%%
 ocado = OcadoScraper()
-# categories_to_scrape = ["Clothing & Accessories", "Bakery"]
-categories_to_scrape = ["Clothing & Accessories", 'Bakery']
-# ocado.scrape_products(categories_to_scrape, True)
+categories_to_scrape = ["Clothing & Accessories", "Bakery", 'Frozen Food']
 ocado.scrape_products(categories_to_scrape)
 # print(len(ocado.product_urls["Clothing & Accessories"]))
-#%%
+    #%%
 ocado = OcadoScraper()
-url = 'https://www.ocado.com/products/gail-s-seeded-sourdough-540647011'
+url = 'https://www.ocado.com/products/shatterproof-silver-multi-finish-baubles-pack-of-4-558717011'
 data = ocado.scrape_product(url, False)
 pprint(data)
 
 #%%
+ocado = OcadoScraper()
 ocado.categories_available_to_scrape()
+#%% 
+ocado = OcadoScraper()
+ocado.delete_saved_product_data()
+
+#%% 
+ocado = OcadoScraper()
+
+#%%
+ocado.get_categories_with_saved_product_data()
+#%%
+ocado = OcadoScraper()
+ocado.get_categories_without_saved_product_data()
 
 # %%
-
+ocado.scrape_products(ocado.get_categories_without_saved_product_data())
+# %%
+# %%
