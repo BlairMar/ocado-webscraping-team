@@ -46,7 +46,6 @@ class ScrapingProductsThread(threading.Thread):
         self.chrome_options = webdriver.ChromeOptions()
         self.chrome_options.add_argument("--start-maximized")
         self.driver = webdriver.Chrome(options=self.chrome_options)
-        self.driver.get(self.url)
         CategoryPageThread._accept_cookies(self.driver)
         self.active = True
     
@@ -65,7 +64,7 @@ class ScrapingProductsThread(threading.Thread):
     def run(self):
         l = len(self.url_list)
         for i, url in enumerate(self.url_list):
-            if i%100 == 0:
+            if i%50 == 0:
                 print(f'Thread {self.threadID} is {int(i/l*100)}% done')
             self.product_details[url.split("-")[-1]] = self.func(self.driver, url, self.download_images)
         self.active = False
