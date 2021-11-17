@@ -2,13 +2,12 @@
 import os
 import requests
 
-
 # Product Images class used by the Scraper class 
 # represents a list of the image urls associated with a product
 class Product_Images:
-    def __init__(self, product_sku):
-        self.product_sku = product_sku
-        self.image_src_list = []
+    def __init__(self, product_sku, image_src_list=[]):
+        self.product_sku = product_sku        
+        self.image_src_list = image_src_list
         
     @staticmethod
     def _create_folder(path):
