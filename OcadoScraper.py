@@ -9,6 +9,7 @@ import json
 import os
 from pprint import pprint
 from ThreadingClass import CategoryPageThread
+from ThreadingClass import ScrapingProductsThread
 import inspect
 import sys
 from datetime import datetime
@@ -142,20 +143,27 @@ class OcadoScraper:
 # This function is called by the PUBLIC function scrape_products() and scrapes the information and images for 
 # all products in the category and puts them in the product_data dictionary 
     def _scrape_product_data_for_category(self, category_name, download_images):
-        product_details = {} 
-        for i, url in enumerate(self.product_urls[category_name]): ## remove enumerate 
-            OcadoScraper._scrape_product_data(self.driver, url, product_details, download_images)
-            # if i == 10:  ### get the first i+1 products - just for testing
-            #     break
+        product_details = {}
+        split_urls_lists = OcadoScraper.split_list(self.product_urls[category_name], 4)
+        thread_list = []
+        for i in range(len(split_urls_lists)):
+            thread_list.append(ScrapingProductsThread(i, split_urls_lists[i], OcadoScraper._scrape_product_data(), download_images))
+        for thread in thread_list:
+            thread.start()
+        while True:
+            threads_activity = [thread.active for thread in thread_list]
+            if True not in threads_activity:
+                break
+        for thread in thread_list():
+            product_details.update(thread.product_details)
         self.product_data[category_name] = product_details
     
     @staticmethod
-    def _scrape_product_data(driver, url, product_details, download_images):
+    def _scrape_product_data(driver, url, download_images):
         product = Product(url)
-        sku = product.get_sku()
-        product_details[sku] = product.scrape_product_data(driver) 
         if download_images:
-            product.download_images()    
+            product.download_images()
+        return product.scrape_product_data(driver)
                     
 ##################################################################################################################  
     # function to read data from a json file
@@ -167,11 +175,11 @@ class OcadoScraper:
   
     # function to dump the data to a json file. Used to save the category_urls, product_links and product_data dictionarys to file
     @staticmethod
-    def _save_data(filename, data, mode='w', indent=None):
+    def _save_data(filename, data, mode='w', indent=4):
         path = './data/'
         OcadoScraper._create_folder(path)
         with open(path + f'{filename}', mode=mode) as f:
-            json.dump(data, f, indent=4) 
+            json.dump(data, f, indent=indent) 
             
     @staticmethod
     def _create_folder(path):
@@ -260,7 +268,14 @@ class OcadoScraper:
         return product_data
         
 ####################################################################### 
-# This is not being used right now       
+# Other functions
+    @staticmethod
+    def split_list(lst, n):
+        divided_list = []
+        for i in range(n):
+            divided_list.append(lst[i::n])
+        return divided_list
+
     def zoom_page(self, zoom_percentage=100):
         self.driver.execute_script(f"document.body.style.zoom='{zoom_percentage}%'")
 #######################################################################
@@ -271,9 +286,9 @@ if __name__ == '__main__':
     # ocado.scrape_products()
 
 #%%
-ocado = OcadoScraper()
-categories_to_scrape = [Toys, Games & Books, Baby, Parent & Kids]
-ocado.scrape_products(categories_to_scrape)
+# ocado = OcadoScraper()
+# categories_to_scrape = [Toys, Games & Books, Baby, Parent & Kids]
+# ocado.scrape_products(categories_to_scrape)
 # print(len(ocado.product_urls["Clothing & Accessories"]))
     #%%
 ocado = OcadoScraper()
