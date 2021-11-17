@@ -124,9 +124,9 @@ class OcadoScraper:
     # function to read data from a json file
     @staticmethod
     def _read_data(path):
-            with open(path) as f:
-                data = f.read()
-                return json.loads(data) 
+        with open(path) as f:
+            data = f.read()
+            return json.loads(data) 
   
     # function to dump the data to a json file. Used to save the category_urls, product_links and product_data dictionarys to file
     @staticmethod
