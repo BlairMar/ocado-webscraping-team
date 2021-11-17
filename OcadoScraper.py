@@ -144,15 +144,16 @@ class OcadoScraper:
     def _scrape_product_data_for_category(self, category_name, download_images):
         product_details = {} 
         for i, url in enumerate(self.product_urls[category_name]): ## remove enumerate 
-            self._scrape_product_data(url, product_details, download_images)
+            OcadoScraper._scrape_product_data(self.driver, url, product_details, download_images)
             # if i == 10:  ### get the first i+1 products - just for testing
             #     break
         self.product_data[category_name] = product_details
-      
-    def _scrape_product_data(self, url, product_details, download_images):
+    
+    @staticmethod
+    def _scrape_product_data(driver, url, product_details, download_images):
         product = Product(url)
         sku = product.get_sku()
-        product_details[sku] = product.scrape_product_data(self.driver) 
+        product_details[sku] = product.scrape_product_data(driver) 
         if download_images:
             product.download_images()    
                     
@@ -255,7 +256,7 @@ class OcadoScraper:
         self.driver.get(url)
         OcadoScraper._accept_cookies(self.driver)
         product_data = {}
-        self._scrape_product_data(url, product_data, download_images)
+        OcadoScraper._scrape_product_data(self.driver, url, product_data, download_images)
         return product_data
         
 ####################################################################### 
@@ -299,7 +300,7 @@ category3 = 'Food Cupboard'
 url1 = 'https://www.ocado.com/browse/clothing-accessories-148232?display=943'
 url2 = 'https://www.ocado.com/browse/christmas-317740?display=4958'
 url3 ='https://www.ocado.com/browse/food-cupboard-20424?display=13989'
-ocado._scrape_product_urls(url3, category3 threads_number=3)
+ocado._scrape_product_urls(url3, category3, threads_number=3)
 #%%
 print(len(ocado.product_urls[url3]))
 
