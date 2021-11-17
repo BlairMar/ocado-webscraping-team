@@ -134,7 +134,7 @@ class OcadoScraper:
         path = './data/'
         OcadoScraper._create_folder(path)
         with open(path + f'{filename}', mode=mode) as f:
-            json.dump(data, f) 
+            json.dump(data, f, indent=4) 
             
     @staticmethod
     def _create_folder(path):
