@@ -4,6 +4,7 @@ import sys
 import os
 from selenium.webdriver.common.by import By
 
+#### For importing files in the repo
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir)
