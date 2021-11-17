@@ -1,5 +1,6 @@
 #%%
 ### Imports:
+from types import DynamicClassAttribute
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import requests
@@ -7,10 +8,12 @@ import time
 import json
 import os
 from pprint import pprint
-
+from ThreadingClass import CategoryPageThread
 import inspect
 import sys
+from datetime import datetime
 
+#### For importing files in the repo
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir)
@@ -30,18 +33,19 @@ class OcadoScraper:
         self.driver = webdriver.Chrome(options=self.chrome_options)
         self.driver.maximize_window()
         self.driver.get(self.ROOT)
-        self._accept_cookies()
+        OcadoScraper._accept_cookies(self.driver)
         self.category_urls = {}
         self.product_urls = {}
         self.product_data = {}
         self._get_categories(scrape_categories) # populate category_urls attribute
 
-    def _accept_cookies(self):
+    @staticmethod
+    def _accept_cookies(driver):
         """
         Locate and Click Cookies Button
         """
         try:
-            _accept_cookies = self.driver.find_element(By.XPATH, '//*[@id="onetrust-accept-btn-handler"]')
+            _accept_cookies = driver.find_element(By.XPATH, '//*[@id="onetrust-accept-btn-handler"]')
             _accept_cookies.click()
             print("Cookies button clicked")
         except:
@@ -65,7 +69,7 @@ class OcadoScraper:
     # only used by the function _get_categories() to scrape the category urls (and then save to a file)
     def _scrape_category_urls(self):
         self.driver.get(self.ROOT + "browse")
-        self._accept_cookies()
+        OcadoScraper._accept_cookies(self.driver)
         categories_web_object = self.driver.find_elements(By.XPATH, '//*[@id="main-content"]/div[2]/div[1]/div/div/div[1]/div/div[1]/div/ul/li/a')
         self.category_urls = {category.text : category.get_attribute('href').replace("?hideOOS=true", "") for category in categories_web_object}
         for category_name, category_url in self.category_urls.items():
@@ -75,30 +79,62 @@ class OcadoScraper:
 
     # UTILITY function for above function
     # only used in the function _scrape_category_urls() - gets the number of products in a category
-    def _get_number_of_products(self, category_url):
+    def _get_number_of_products(self, category_url, close_window=False):
         self.driver.get(category_url)
         number_of_products = self.driver.find_element(By.XPATH, '//*[@id="main-content"]/div[2]/div[2]//div/div[2]/div/span').text.split(' ')[0]
+        if close_window:
+            self.driver.close()
         return number_of_products
     
 ###########################################################################################################################
     #The following 2 functions are used to populate the product urls dictionary for the specified category
     
     # This function is called by the PUBLIC function scrape_products() and populates the product_urls dictionary for the specified category
-    def _scrape_product_urls(self, category_name):
-        number_of_products_in_category = self.category_urls[category_name].split('=')[-1]
-        self.driver.get(self.category_urls[category_name])
-        self.product_urls[category_name] = self._scroll_to_get_all_product_urls(number_of_products_in_category, 30)
+
+    def _scrape_product_urls(self, category_url, category_name, threads_number=4):
+        s = datetime.now()
+        number_of_products_on_page = int(category_url.split('=')[-1])
+        if number_of_products_on_page < 1500:
+            threads_number = 1
+        if threads_number == 4 and number_of_products_on_page > 10000:
+            threads_number = 3
+        number_of_scrolls = number_of_products_on_page/35
+        if threads_number-1:
+            scroll_points = []
+            for i in range(threads_number+1):
+                scroll_points.append(i/threads_number)
+            thread_list = []
+            for i in range(len(scroll_points)-1):
+                thread_list.append(CategoryPageThread(i, category_url, number_of_scrolls, scroll_points[i], scroll_points[i+1], OcadoScraper._scroll_to_get_product_urls))
+            for thread in thread_list:
+                thread.start()
+            while True:
+                threads_activity = [thread.active for thread in thread_list]
+                if True not in threads_activity:
+                    break
+            data = []
+            for thread in thread_list:
+                data.extend(thread.product_urls)
+            self.product_urls[category_name] = list(set(data))
+        else:
+            self.driver.get(category_url)
+            OcadoScraper._accept_cookies(self.driver)
+            self.product_urls[category_name] = OcadoScraper._scroll_to_get_product_urls(self.driver, number_of_scrolls)
+        print(datetime.now()-s)
+
 
     # UTILITY function for the above function to scroll the page and get all the product urls on the page
-    def _scroll_to_get_all_product_urls(self, number_of_products, number_of_items_in_each_scroll):
+    @staticmethod
+    def _scroll_to_get_product_urls(driver, number_of_scrolls, start_scrolling_at=0, stop_scrolling_at=1):
         urls_temp_web_object = []
-        number_of_times_to_scroll = int(int(number_of_products)/number_of_items_in_each_scroll)
-        for i in range(number_of_times_to_scroll):
-            self.driver.execute_script(f"window.scrollTo(0, document.body.scrollHeight*{(i+1)/number_of_times_to_scroll});")
-            urls_temp_web_object.extend(self.driver.find_elements(By.XPATH, '//*[@id="main-content"]/div[2]/div[2]/ul/li/div[2]/div[1]/a'))
+        for i in range(int(start_scrolling_at*number_of_scrolls), int(stop_scrolling_at*number_of_scrolls)):
+            if i == int(start_scrolling_at*number_of_scrolls):
+                time.sleep(0.5)
+            driver.execute_script(f"window.scrollTo(0, document.body.scrollHeight*{(i+1)/number_of_scrolls});")
             time.sleep(0.5)
+            urls_temp_web_object.extend(driver.find_elements(By.XPATH, '//*[@id="main-content"]/div[2]/div[2]/ul/li/div[2]/div[1]/a'))
         urls_web_object = list(set(urls_temp_web_object))
-        urls_web_object = self.driver.find_elements(By.XPATH, '//*[@id="main-content"]/div[2]/div[2]/ul/li/div[2]/div[1]/a')
+        # urls_web_object = self.driver.find_elements(By.XPATH, '//*[@id="main-content"]/div[2]/div[2]/ul/li/div[2]/div[1]/a')
         urls = [url.get_attribute('href') for url in urls_web_object]
         return urls
     
@@ -209,14 +245,15 @@ class OcadoScraper:
             if os.path.exists(path):            
                 temp_dict = OcadoScraper._read_data(path) #read the data from the json dict into product_data dict attribute
                 self.product_data = temp_dict
-            self._scrape_product_urls(category)
+            self._scrape_product_urls(self.category_urls[category], category)
+
             self._scrape_product_data_for_category(category, download_images)
             OcadoScraper._save_data("product_data", self.product_data) #save the product_data dict into a json file after each scrape of a category, overwriting the file if it exists 
             print(f"Product data from the {category} category saved successfully")
 
     def scrape_product(self, url, download_images):
         self.driver.get(url)
-        self._accept_cookies
+        OcadoScraper._accept_cookies(self.driver)
         product_data = {}
         self._scrape_product_data(url, product_data, download_images)
         return product_data
@@ -254,3 +291,33 @@ saved_categories = ocado.get_categories_with_saved_product_data()
 for category in saved_categories:
     print(f"{category} : {ocado.number_of_products_saved(category)}")
 
+# %%
+#test multithreading for scrape product urls
+ocado = OcadoScraper()
+category1 = 'Clothing & Accessories'
+category3 = 'Food Cupboard'
+url1 = 'https://www.ocado.com/browse/clothing-accessories-148232?display=943'
+url2 = 'https://www.ocado.com/browse/christmas-317740?display=4958'
+url3 ='https://www.ocado.com/browse/food-cupboard-20424?display=13989'
+ocado._scrape_product_urls(url3, category3 threads_number=3)
+#%%
+print(len(ocado.product_urls[url3]))
+
+#threads: time
+
+#url2 5k items on page
+#1: 8:13
+#2: 4:00
+#4: 2:27
+
+#url1 1k items on page
+#1: 0:33
+#2: 0:38
+#4: 0:48
+
+
+#url3 14k items on page
+#1: too long
+#2: 26:39
+#3: 17:34
+#4: currently crashes
