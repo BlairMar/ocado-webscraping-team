@@ -192,7 +192,7 @@ class OcadoScraper:
             print("Can not delete the file as it doesn't exist")
     
     @staticmethod
-    def number_of_products_saved(category_name):
+    def number_of_products_saved_from_category(category_name):
         path = "./data/product_data"
         if os.path.exists(path):
             temp_dict = OcadoScraper._read_data(path)
