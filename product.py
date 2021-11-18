@@ -34,7 +34,7 @@ class Product:
         product_xpaths = { 'Name' : '//*[@id="overview"]/section[1]/header/h2',
                            'Description' : '//*[@id="productInformation"]/div[2]/div[1]/div[2]/div',
                            'Price' : '//*[@id="overview"]/section[2]/div[1]/div/h2',
-                           'Price per' : '//*[@id="overview"]/section[2]/div[1]/div/span[2]',
+                           'Price per' : '//*[@id="overview"]/section[2]/div[1]/div/span',
                            'Offers' : '//*[@id="overview"]/section[2]/div[2]/div/a/p',
                            'Rating' : '//*[@id="overview"]/section[1]/header/div/a[1]/div/span[1]/span',
                            'Ingredients' : '//*[@id="productInformation"]/div[3]/div/div[2]/div[2]/div/div[1]/div',
