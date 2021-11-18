@@ -1,0 +1,43 @@
+_get_category_links() - populates self.category_links = {}
+Gets all the top level category links from the ocado.com/browse page
+and puts them in a dictionary eg {"Christmas" : "https://www.ocado.com/browse/christmas-317740", 
+                                  "Fresh & Chilled Food" : "https://www.ocado.com/browse/fresh-chilled-food-20002",
+                                  ...}
+
+_get_product_links(category_name) populates self.product_links = {} for the category passed in
+Gets a list of the product links for each of the categories above and puts them in a dictionary
+eg {"Christmas" : [list of product links], 
+    "Fresh & Chilled Food" : [list of product links],
+    ...}
+
+_get_product_data(category_name) populates self.product_data for the category passed in
+Gets nested dictionary of all product data
+eg    {"Christmas" : { Product 1 name : { Product1 details such as price, description etc},
+                       Product 2 name : {Product 2 details...},
+                       ...
+                     },
+        "Fresh & Chilled Food" : { Product 1 name : { Product1 details such as price, description etc},
+                                   Product 2 name : {Product 2 details...},
+                                   ...
+                                 },
+        .........                     
+      }
+
+PUBLIC FUNCTION IDEAS:
+
+ocado = Scraper()
+get_categories()
+returns a list of all the possible categories you can scrape
+param so you can specify either get from website or from saved list?
+
+get_categories_already_scraped_with_time_stamp()
+gets a list of the categories that have saved product data in a json file and the date/time this was ran
+or returns list of categories that do NOT have saved product data so it can be passed directly into the below function
+Once the user has the above info they can then decide which categories to scrape based on the above information
+using the scrape_products(category_list=ALL) function 
+We would still change the save of the product data so it adds the new data to the dictionary in the json file
+Would that offer the necessary functionality? 
+
+When saving the product data need to create a dict from json then add to the dict then rewrite to the json
+
+also get a function to return how many items have been saved in each category
