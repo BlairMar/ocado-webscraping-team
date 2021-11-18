@@ -259,7 +259,7 @@ class OcadoScraper:
             OcadoScraper._save_data("product_data", self.product_data) #save the product_data dict into a json file after each scrape of a category, overwriting the file if it exists 
             print(f"Product data from the {category} category saved successfully")
 
-    def scrape_product(self, url, download_images):
+    def scrape_product(self, url, download_images=False):
         self.driver.get(url)
         OcadoScraper._accept_cookies(self.driver)
         return OcadoScraper._scrape_product_data(self.driver, url, download_images)
