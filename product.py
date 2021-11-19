@@ -64,8 +64,7 @@ class Product:
         except:
             return None     
 
-    # The following function are UTILITY functions for the below public function scrape_product_data() to scrape 
-    # all the information and images of the product 
+    # scrape all the information and images of the product 
     def _get_product_information(self, key, attribute_web_element):
         if key in ['Name', 'Description', 'Price', 'Price per', 'Offers', 'Ingredients', 'Nutrition']:
             return attribute_web_element.text
@@ -79,8 +78,7 @@ class Product:
             return self.image_list.scrape_images(attribute_web_element)
         if key == 'Categories':
             return Product._scrape_category_info(attribute_web_element)
-               
-  
+                 
     @staticmethod
     def _scrape_hidden_information(web_elements):
         text_in_hidden_elements = [element.get_attribute('textContent') for element in web_elements]
