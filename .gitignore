@@ -4,5 +4,6 @@ Ocado_info.txt
 __pycache__
 data/images
 .DS_Store
+data/product_data
 
 
