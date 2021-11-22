@@ -17,7 +17,6 @@ class CategoryPageThread(threading.Thread):
         self.driver = webdriver.Chrome(options=self.chrome_options)
         self.driver.get(self.url)
         CategoryPageThread._accept_cookies(self.driver)
-
         self.active = True
 
     @staticmethod

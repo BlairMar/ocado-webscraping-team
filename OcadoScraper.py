@@ -388,8 +388,8 @@ print('saved',ocado.get_categories_with_saved_product_data(),'\n')
 print('not saved',ocado.get_categories_without_saved_product_data(),'\n')
 
 #%%
-ocado = OcadoScraper(scrape_categories=False)
-ocado.scrape_products(categories=["Clothing & Accessories"])
+# ocado = OcadoScraper(scrape_categories=False)
+# ocado.scrape_products(categories=['Baby, Parent & Kids'])
 
 
 #%%
