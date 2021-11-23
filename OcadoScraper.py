@@ -33,6 +33,7 @@ class OcadoScraper:
         self.category_url_path = self.data_path + 'category_urls'
         self.product_data_path = self.data_path + 'product_data'
         self.chrome_options = webdriver.ChromeOptions()
+        # self.chrome_options.add_argument("--headless")
         self.chrome_options.add_argument("--start-maximized")
         self.driver = webdriver.Chrome(options=self.chrome_options)
         self.driver.maximize_window()
@@ -80,6 +81,7 @@ class OcadoScraper:
             number_of_products = self._get_number_of_products(category_url)
             self.category_urls[category_name] += '?display=' + number_of_products
         self._save_data("category_urls", self.category_urls)
+        return self.category_urls
 
     # UTILITY function for above function
     # only used in the function _scrape_category_urls() - gets the number of products in a category
@@ -361,8 +363,8 @@ if __name__ == '__main__':
 
 
 # %%
-ocado = OcadoScraper()
-ocado.download_images(['Frozen Food', 'Bakery']) #default value is ALL categories
+# ocado = OcadoScraper()
+# ocado.download_images(['Frozen Food', 'Bakery']) #default value is ALL categories
 # %%
 
 #test multithreading for scrape product urls
@@ -388,8 +390,22 @@ print('saved',ocado.get_categories_with_saved_product_data(),'\n')
 print('not saved',ocado.get_categories_without_saved_product_data(),'\n')
 
 #%%
-# ocado = OcadoScraper(scrape_categories=False)
-# ocado.scrape_products(categories=['Baby, Parent & Kids'])
+ocado = OcadoScraper()
+ocado.scrape_products(categories=['Bakery'])
 
 
 #%%
+ocado = OcadoScraper()
+# ocado.categories_available_to_scrape()
+a = ocado._scrape_category_urls()
+print(a)
+
+# For _scrape_category_urls()
+# 1. there are more than 2 items
+# 2. keys are not empty strings
+# 3. urls(dictionary values) end in a number
+
+
+# _get_number_of_products()
+# https://www.ocado.com/browse?filters=vegetarian-19996
+# check that the number is bigger than 1
