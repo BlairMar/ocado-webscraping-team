@@ -103,7 +103,7 @@ class OcadoScraper:
         if threads_number == 4 and number_of_products_on_page > 10000: #if pages are too big reduces number of threads from 4 to 3
             threads_number = 3
         number_of_scrolls = number_of_products_on_page/35
-        if threads_number-1: #if more than one thread is beign used
+        if threads_number-1: #if more than one thread is being used
             scroll_points = []
             for i in range(threads_number+1): #compute scrolling boundaries
                 scroll_points.append(i/threads_number)
@@ -146,7 +146,7 @@ class OcadoScraper:
 # all products in the category and puts them in the product_data dictionary 
     def _scrape_product_data_for_category(self, category_name, download_images):
         product_details = {}
-        split_urls_lists = OcadoScraper.split_list(self.product_urls[category_name], 4)
+        split_urls_lists = OcadoScraper._split_list(self.product_urls[category_name], 4)
         thread_list = []
         for i in range(len(split_urls_lists)): #add threads to a list
             thread_list.append(ScrapingProductsThread(i, split_urls_lists[i], OcadoScraper._scrape_product_data, download_images))
@@ -166,6 +166,13 @@ class OcadoScraper:
         if download_images:
             product.download_images()
         return product.scrape_product_data(driver)
+    
+    @staticmethod
+    def _split_list(lst, n):
+        divided_list = []
+        for i in range(n):
+            divided_list.append(lst[i::n])
+        return divided_list
                     
 ##################################################################################################################  
 
@@ -181,7 +188,6 @@ class OcadoScraper:
         OcadoScraper._create_folder(self.data_path)
         with open(self.data_path + f'{filename}', mode=mode) as f:
             json.dump(data, f, indent=indent) 
-
             
     @staticmethod
     def _create_folder(path):
@@ -234,6 +240,16 @@ class OcadoScraper:
             os.remove(self.product_data_path)
         else: 
             print("Can not delete the file as it doesn't exist")
+            
+    # Delete the saved product data for the specified category name. 
+    # Used for example if a scrape of a category has gone wrong and not all the products have been scraped for that category.                     
+    def delete_saved_product_data_for_category(self, category_name):
+        if os.path.exists(self.product_data_path):            
+            product_data = OcadoScraper._read_data(self.product_data_path) 
+            product_data.pop(category_name, "No stored data for that category")
+            self._save_data("product_data", product_data) 
+        else:
+            print("No stored data file")
 
     # Get the number of products saved to the product_data json file for the specified category name.
     def number_of_products_saved_from_category(self, category_name):
@@ -255,7 +271,7 @@ class OcadoScraper:
         max_number_products = sum(self.number_of_products_in_categories().values())
         print(f'\nTotal number of products to scrape: {max_number_products}') 
         number_products_scraped = sum(self.get_categories_with_saved_product_data().values()) 
-        print(f'\nNumber of products that have been scraped already: {number_products_scraped}')
+        print(f'\nNumber of products scraped already: {number_products_scraped}')
         print(f'\nNumber of products left to scrape: {max_number_products - number_products_scraped}')
         saved = self.get_categories_with_saved_product_data()    
         print(f'\nCategories scraped already and number of products scraped: \n {sorted(saved.items(), key=lambda x: x[1], reverse=True)}')
@@ -274,7 +290,6 @@ class OcadoScraper:
             self._scrape_product_data_for_category(category, download_images)
             self._save_data("product_data", self.product_data) #save the product_data dict into a json file after each scrape of a category, overwriting the file if it exists 
             print(f"Product data from the {category} category saved successfully")
-
 
     def scrape_product(self, url, download_images=False):
         self.driver.get(url)
@@ -300,14 +315,7 @@ class OcadoScraper:
                 image_list.download_all_images()
  
 ####################################################################### 
-# Other functions
-    @staticmethod
-    def split_list(lst, n):
-        divided_list = []
-        for i in range(n):
-            divided_list.append(lst[i::n])
-        return divided_list
-
+# Other functions 
     def zoom_page(self, zoom_percentage=100):
         self.driver.execute_script(f"document.body.style.zoom='{zoom_percentage}%'")
 #######################################################################
@@ -319,8 +327,8 @@ if __name__ == '__main__':
 
 #%%
 
-# ocado = OcadoScraper()
-# categories_to_scrape = ['Frozen Food']
+# ocado = OcadoScraper(True)
+# categories_to_scrape = ['Fresh & Chilled Food']
 # ocado.scrape_products(categories_to_scrape)
 #%%
 # ocado = OcadoScraper()
@@ -332,10 +340,10 @@ if __name__ == '__main__':
 # pprint(data2)
 
 #%%
-# ocado = OcadoScraper()
-# ocado.number_of_products_in_categories()
-# ocado.categories_available_to_scrape()
-# ocado.current_status_info()
+ocado = OcadoScraper()
+ocado.number_of_products_in_categories()
+ocado.categories_available_to_scrape()
+ocado.current_status_info()
 #%%
 # ocado.scrape_products(ocado.get_categories_without_saved_product_data())
 # ocado = OcadoScraper()
@@ -349,16 +357,10 @@ if __name__ == '__main__':
 # pprint(data)
 #%%
 # ocado = OcadoScraper()
-# ocado.categories_available_to_scrape()
-# ocado.get_categories_with_saved_product_data()
-# ocado.get_categories_without_saved_product_data()
+ocado.categories_available_to_scrape()
+ocado.get_categories_with_saved_product_data()
+ocado.get_categories_without_saved_product_data()
 # ocado.scrape_products(ocado.get_categories_without_saved_product_data())
-
-#%% 
-# saved_categories = ocado.get_categories_with_saved_product_data()
-# for category in saved_categories:
-#     print(f"{category} : {ocado.number_of_products_saved(category)}")
-
 
 # %%
 ocado = OcadoScraper()
@@ -393,3 +395,10 @@ print('not saved',ocado.get_categories_without_saved_product_data(),'\n')
 
 
 #%%
+ocado = OcadoScraper()
+
+# %%
+ocado.delete_saved_product_data_for_category('Fresh & Chilled Food')
+# %%
+ocado.current_status_info()
+# %%
