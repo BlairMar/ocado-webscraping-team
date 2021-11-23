@@ -5,5 +5,7 @@ __pycache__
 data/images
 .DS_Store
 data/product_data
+testscrapy.py
+
 
 
