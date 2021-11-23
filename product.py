@@ -43,7 +43,7 @@ class Product:
                            'Brand details' : '//html/body/div[1]/div[1]/div[3]/article/section/div[2]/div[3]/div[2]//div/div',
                            'Out of Stock' : '//*[@id="overview"]/section[2]/div[2]/h1',
                            'Image links' : '//*[@class="bop-gallery__miniatures"]//img | /html/body/div[1]/div[1]/div[3]/article/section[1]/div/div/div[1]/img',
-                           'Categories' : '//html/body/div[1]/div[1]/div[3]/article/section/div[2]//ul/li/a'   
+                           'Categories' : '//html/body/div[1]/div[1]/div[3]/article/section/div[2]/ul/li//a'   
                          } 
         return product_xpaths        
                                                                               
@@ -86,7 +86,7 @@ class Product:
     
     @staticmethod
     def _scrape_category_info(web_elements):
-        return [element.text for element in web_elements]
+        return [element.get_attribute('textContent') for element in web_elements]
     
  ##############################################################################
  # PUBLIC functions
