@@ -346,10 +346,10 @@ if __name__ == '__main__':
 # pprint(data2)
 
 #%%
-# ocado = OcadoScraper()
-# ocado.number_of_products_in_categories()
-# ocado.categories_available_to_scrape()
-# ocado.current_status_info()
+ocado = OcadoScraper()
+ocado.number_of_products_in_categories()
+ocado.categories_available_to_scrape()
+ocado.current_status_info()
 #%%
 # ocado.scrape_products(ocado.get_categories_without_saved_product_data())
 # ocado = OcadoScraper()
@@ -363,9 +363,9 @@ if __name__ == '__main__':
 # pprint(data)
 #%%
 # ocado = OcadoScraper()
-# ocado.categories_available_to_scrape()
-# ocado.get_categories_with_saved_product_data()
-# ocado.get_categories_without_saved_product_data()
+ocado.categories_available_to_scrape()
+ocado.get_categories_with_saved_product_data()
+ocado.get_categories_without_saved_product_data()
 # ocado.scrape_products(ocado.get_categories_without_saved_product_data())
 
 # %%
@@ -402,6 +402,7 @@ if __name__ == '__main__':
 
 
 #%%
+
 #test headless
 # ocado = OcadoScraper()
 # a = ocado._scrape_category_urls()
@@ -426,4 +427,11 @@ if __name__ == '__main__':
 # ocado.delete_saved_product_data_for_category('Fresh & Chilled Food')
 # %%
 # ocado.current_status_info()
+
+ocado = OcadoScraper()
+
+# %%
+ocado.delete_saved_product_data_for_category('Fresh & Chilled Food')
+# %%
+
 # %%
