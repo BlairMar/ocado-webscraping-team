@@ -43,7 +43,7 @@ class Product:
                            'Brand details' : '//html/body/div[1]/div[1]/div[3]/article/section/div[2]/div[3]/div[2]//div/div',
                            'Out of Stock' : '//*[@id="overview"]/section[2]/div[2]/h1',
                            'Image links' : '//*[@class="bop-gallery__miniatures"]//img | /html/body/div[1]/div[1]/div[3]/article/section[1]/div/div/div[1]/img',
-                           'Categories' : '//html/body/div[1]/div[1]/div[3]/article/section/div[2]//ul/li/a'   
+                           'Categories' : '//html/body/div[1]/div[1]/div[3]/article/section/div[2]/ul/li//a'   
                          } 
         return product_xpaths        
                                                                               
@@ -64,8 +64,7 @@ class Product:
         except:
             return None     
 
-    # The following function are UTILITY functions for the below public function scrape_product_data() to scrape 
-    # all the information and images of the product 
+    # scrape all the information and images of the product 
     def _get_product_information(self, key, attribute_web_element):
         if key in ['Name', 'Description', 'Price', 'Price per', 'Offers', 'Ingredients', 'Nutrition']:
             return attribute_web_element.text
@@ -79,8 +78,7 @@ class Product:
             return self.image_list.scrape_images(attribute_web_element)
         if key == 'Categories':
             return Product._scrape_category_info(attribute_web_element)
-               
-  
+                 
     @staticmethod
     def _scrape_hidden_information(web_elements):
         text_in_hidden_elements = [element.get_attribute('textContent') for element in web_elements]
@@ -88,7 +86,7 @@ class Product:
     
     @staticmethod
     def _scrape_category_info(web_elements):
-        return [element.text for element in web_elements]
+        return [element.get_attribute('textContent') for element in web_elements]
     
  ##############################################################################
  # PUBLIC functions
