@@ -346,10 +346,10 @@ if __name__ == '__main__':
 # pprint(data2)
 
 #%%
-ocado = OcadoScraper()
-ocado.number_of_products_in_categories()
-ocado.categories_available_to_scrape()
-ocado.current_status_info()
+# ocado = OcadoScraper()
+# ocado.number_of_products_in_categories()
+# ocado.categories_available_to_scrape()
+# ocado.current_status_info()
 #%%
 # ocado.scrape_products(ocado.get_categories_without_saved_product_data())
 # ocado = OcadoScraper()
@@ -363,9 +363,9 @@ ocado.current_status_info()
 # pprint(data)
 #%%
 # ocado = OcadoScraper()
-ocado.categories_available_to_scrape()
-ocado.get_categories_with_saved_product_data()
-ocado.get_categories_without_saved_product_data()
+# ocado.categories_available_to_scrape()
+# ocado.get_categories_with_saved_product_data()
+# ocado.get_categories_without_saved_product_data()
 # ocado.scrape_products(ocado.get_categories_without_saved_product_data())
 
 # %%
