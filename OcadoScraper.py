@@ -294,9 +294,7 @@ class OcadoScraper:
     def scrape_product(self, url, download_images=False):
         self.driver.get(url)
         OcadoScraper._accept_cookies(self.driver)
-        product_data = {}
-        self._scrape_product_data(url, product_data, download_images)
-        return product_data
+        return OcadoScraper._scrape_product_data(self.driver, url, download_images)
     
     # Download all images for the specified LIST of categories using the stored image links in the json product data file. 
     # Only call this function after product data has been scraped for a category
@@ -325,19 +323,16 @@ if __name__ == '__main__':
     # ocado = OcadoScraper() 
     # ocado.scrape_products()
 
-#%%
+
 
 # ocado = OcadoScraper(True)
 # categories_to_scrape = ['Fresh & Chilled Food']
 # ocado.scrape_products(categories_to_scrape)
 #%%
-# ocado = OcadoScraper()
-# url1 = 'https://www.ocado.com/products/shatterproof-silver-multi-finish-baubles-pack-of-4-558717011'
-# url2 = 'https://www.ocado.com/products/hovis-best-of-both-medium-sliced-22616011'
-# data1 = ocado.scrape_product(url1, True)
-# data2 = ocado.scrape_product(url2, True)
-# pprint(data1)
-# pprint(data2)
+ocado = OcadoScraper()
+url = 'https://www.ocado.com/products/hovis-best-of-both-medium-sliced-22616011'
+data = ocado.scrape_product(url, True)
+pprint(data)
 
 #%%
 ocado = OcadoScraper()
@@ -357,9 +352,9 @@ ocado.current_status_info()
 # pprint(data)
 #%%
 # ocado = OcadoScraper()
-ocado.categories_available_to_scrape()
-ocado.get_categories_with_saved_product_data()
-ocado.get_categories_without_saved_product_data()
+# ocado.categories_available_to_scrape()
+# ocado.get_categories_with_saved_product_data()
+# ocado.get_categories_without_saved_product_data()
 # ocado.scrape_products(ocado.get_categories_without_saved_product_data())
 
 # %%
