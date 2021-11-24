@@ -223,7 +223,7 @@ class OcadoScraper:
             return {category : int(self.number_of_products_saved_from_category(category)) for category in temp_dict.keys()}
         else:
             print('No categories with saved product data')
-            return
+            return 
      
     # Gets a list of categories that do not have saved product data. This list can be passed as a parameter to the scrape_products() function to scrape remaining categories                
     def get_categories_without_saved_product_data(self):
@@ -233,8 +233,8 @@ class OcadoScraper:
         else: 
             self._scrape_category_urls()
             all_categories = self.category_urls.keys()
-        stored_data = self.get_categories_with_saved_product_data().keys()
-        if stored_data:
+        if os.path.exists(self.product_data_path):
+            stored_data = self.get_categories_with_saved_product_data().keys()
             return list(set(all_categories).difference(set(stored_data)))
         else:
             return list(all_categories)
@@ -311,7 +311,6 @@ class OcadoScraper:
         return OcadoScraper._scrape_product_data(self.driver, url, download_images)
     
     # Download all images for the specified LIST of categories using the stored image links in the json product data file. 
-    # Only call this function after product data has been scraped for a category
     def download_images(self, categories='ALL'):
         if categories == 'ALL':
             categories = self.category_urls.keys()
@@ -321,10 +320,13 @@ class OcadoScraper:
             print('No stored product data')
             return
         for category in categories:
-            for key, value in products[category].items():
-                image_src_list = products[category][key]['Image links']
-                image_list = Product_Images(key, image_src_list)
-                image_list.download_all_images()
+            if category in products.keys():
+                for key, value in products[category].items():
+                    image_src_list = products[category][key]['Image links']
+                    image_list = Product_Images(key, image_src_list)
+                    image_list.download_all_images()
+            else:
+                print(f'No stored data for {category} category')
  
 ####################################################################### 
 # Other functions 
@@ -343,11 +345,15 @@ if __name__ == '__main__':
 # categories_to_scrape = ['Fresh & Chilled Food']
 # ocado.scrape_products(categories_to_scrape)
 #%%
+# ocado = OcadoScraper()
+# url = 'https://www.ocado.com/products/hovis-best-of-both-medium-sliced-22616011'
+# data = ocado.scrape_product(url, True)
+# pprint(data)
+#%%
 ocado = OcadoScraper()
-url = 'https://www.ocado.com/products/hovis-best-of-both-medium-sliced-22616011'
-data = ocado.scrape_product(url, True)
-pprint(data)
-
+ocado.categories_available_to_scrape()
+#%%
+ocado.get_categories_without_saved_product_data()
 #%%
 ocado = OcadoScraper()
 ocado.number_of_products_in_categories()
@@ -372,8 +378,9 @@ ocado.current_status_info()
 # ocado.scrape_products(ocado.get_categories_without_saved_product_data())
 
 # %%
-# ocado = OcadoScraper()
-# ocado.download_images(['Frozen Food', 'Bakery']) #default value is ALL categories
+ocado = OcadoScraper()
+ocado.scrape_products(['Bakery'])
+ocado.download_images(['Frozen Food', 'Bakery']) #default value is ALL categories
 # %%
 
 #test multithreading for scrape product urls
@@ -429,9 +436,10 @@ ocado = OcadoScraper()
 # %%
 # ocado.delete_saved_product_data_for_category('Fresh & Chilled Food')
 # %%
-# ocado.current_status_info()
-
 ocado = OcadoScraper()
+ocado.current_status_info()
+
+
 
 # %%
 ocado.delete_saved_product_data_for_category('Fresh & Chilled Food')
