@@ -223,7 +223,6 @@ class OcadoScraper:
             return {category : int(self.number_of_products_saved_from_category(category)) for category in temp_dict.keys()}
         else:
             print('No categories with saved product data')
-            return 
      
     # Gets a list of categories that do not have saved product data. This list can be passed as a parameter to the scrape_products() function to scrape remaining categories                
     def get_categories_without_saved_product_data(self):
@@ -272,6 +271,7 @@ class OcadoScraper:
             if category_name in temp_dict.keys():
                 return len(temp_dict[category_name])
         print("No products saved for this category")
+        return 0
     
     # The number of products in the categories on the ocado website            
     def number_of_products_in_categories(self, categories='ALL'):
@@ -284,11 +284,12 @@ class OcadoScraper:
     def current_status_info(self):
         max_number_products = sum(self.number_of_products_in_categories().values())
         print(f'\nTotal number of products to scrape: {max_number_products}') 
-        number_products_scraped = sum(self.get_categories_with_saved_product_data().values()) 
+        number_products_scraped = sum(self.get_categories_with_saved_product_data().values()) if os.path.exists(self.product_data_path) else 0
         print(f'\nNumber of products scraped already: {number_products_scraped}')
         print(f'\nNumber of products left to scrape: {max_number_products - number_products_scraped}')
-        saved = self.get_categories_with_saved_product_data()    
-        print(f'\nCategories scraped already and number of products scraped: \n {sorted(saved.items(), key=lambda x: x[1], reverse=True)}')
+        if os.path.exists(self.product_data_path):
+            saved = self.get_categories_with_saved_product_data()    
+            print(f'\nCategories scraped already and number of products scraped: \n {sorted(saved.items(), key=lambda x: x[1], reverse=True)}')
         not_scraped = self.number_of_products_in_categories(self.get_categories_without_saved_product_data())
         print(f'\nCategories left to scrape: \n {sorted(not_scraped.items(), key=lambda x: x[1], reverse=True)}')
                                           
@@ -345,12 +346,13 @@ if __name__ == '__main__':
 # categories_to_scrape = ['Fresh & Chilled Food']
 # ocado.scrape_products(categories_to_scrape)
 #%%
-# ocado = OcadoScraper()
-# url = 'https://www.ocado.com/products/hovis-best-of-both-medium-sliced-22616011'
-# data = ocado.scrape_product(url, True)
-# pprint(data)
+ocado = OcadoScraper()
+url = 'https://www.ocado.com/products/hovis-best-of-both-medium-sliced-22616011'
+data = ocado.scrape_product(url, True)
+pprint(data)
 #%%
 ocado = OcadoScraper()
+#%%
 ocado.categories_available_to_scrape()
 #%%
 ocado.get_categories_without_saved_product_data()
