@@ -80,7 +80,8 @@ class OcadoScraper:
             number_of_products = self._get_number_of_products(category_url)
             self.category_urls[category_name] += '?display=' + number_of_products
         self._save_data("category_urls", self.category_urls)
-
+        return self.category_urls
+    
     # UTILITY function for above function
     # only used in the function _scrape_category_urls() - gets the number of products in a category
     def _get_number_of_products(self, category_url, close_window=False):
@@ -361,8 +362,8 @@ if __name__ == '__main__':
 
 
 # %%
-ocado = OcadoScraper()
-ocado.download_images(['Frozen Food', 'Bakery']) #default value is ALL categories
+# ocado = OcadoScraper()
+# ocado.download_images(['Frozen Food', 'Bakery']) #default value is ALL categories
 # %%
 
 #test multithreading for scrape product urls
@@ -375,17 +376,17 @@ ocado.download_images(['Frozen Food', 'Bakery']) #default value is ALL categorie
 # ocado._scrape_product_urls(url3, category3, threads_number=3)
 #%%
 #test multithreading for _scrape_product_data_for_category
-ocado = OcadoScraper()
+# ocado = OcadoScraper()
 
-category1 = 'Clothing & Accessories'
-category3 = 'Food Cupboard'
-url1 = 'https://www.ocado.com/browse/clothing-accessories-148232?display=943'
-url2 = 'https://www.ocado.com/browse/christmas-317740?display=4958'
-url3 ='https://www.ocado.com/browse/food-cupboard-20424?display=13989'
-ocado._scrape_product_urls(url3, category3, threads_number=3)
-print('available',ocado.categories_available_to_scrape(),'\n')
-print('saved',ocado.get_categories_with_saved_product_data(),'\n')
-print('not saved',ocado.get_categories_without_saved_product_data(),'\n')
+# category1 = 'Clothing & Accessories'
+# category3 = 'Food Cupboard'
+# url1 = 'https://www.ocado.com/browse/clothing-accessories-148232?display=943'
+# url2 = 'https://www.ocado.com/browse/christmas-317740?display=4958'
+# url3 ='https://www.ocado.com/browse/food-cupboard-20424?display=13989'
+# ocado._scrape_product_urls(url3, category3, threads_number=3)
+# print('available',ocado.categories_available_to_scrape(),'\n')
+# print('saved',ocado.get_categories_with_saved_product_data(),'\n')
+# print('not saved',ocado.get_categories_without_saved_product_data(),'\n')
 
 #%%
 # ocado = OcadoScraper(scrape_categories=False)
@@ -393,3 +394,7 @@ print('not saved',ocado.get_categories_without_saved_product_data(),'\n')
 
 
 #%%
+# ocado = OcadoScraper()
+# ocado.categories_available_to_scrape()
+
+# %%
