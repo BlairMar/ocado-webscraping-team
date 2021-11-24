@@ -103,35 +103,22 @@ class OcadoScraper:
 
     #TO TIDY UP THIS
     def _scrape_product_urls(self, category_url, category_name, threads_number=4):
-        s = datetime.now()
+        starting_time = datetime.now()
         number_of_products_on_page = int(category_url.split('=')[-1])
-        if number_of_products_on_page < 1500: #if pages are too small only use one thread
-            threads_number = 1
-        if threads_number == 4 and number_of_products_on_page > 10000: #if pages are too big reduces number of threads from 4 to 3
-            threads_number = 3
         number_of_scrolls = number_of_products_on_page/35
-        if threads_number-1: #if more than one thread is being used
-            scroll_points = []
-            for i in range(threads_number+1): #compute scrolling boundaries
-                scroll_points.append(i/threads_number)
-            thread_list = []
-            for i in range(len(scroll_points)-1): #add threads to a list
-                thread_list.append(CategoryPageThread(i, category_url, number_of_scrolls, scroll_points[i], scroll_points[i+1], OcadoScraper._scroll_to_get_product_urls, headless=self.headless))
-            for thread in thread_list:
-                thread.start() #start s crolling and scraping in each thread's browser
-            while True: #wait for threads to finish running
-                threads_activity = [thread.active for thread in thread_list]
-                if True not in threads_activity:
-                    break
-            data = []
-            for thread in thread_list: #bring data together 
-                data.extend(thread.product_urls)
-            self.product_urls[category_name] = list(set(data))
-        else: #if we only use one thread
-            self.driver.get(category_url)
-            OcadoScraper._accept_cookies(self.driver)
-            self.product_urls[category_name] = OcadoScraper._scroll_to_get_product_urls(self.driver, number_of_scrolls)
-        print(datetime.now()-s)
+        threads_number = 1 if number_of_products_on_page<1500 else 3 if number_of_products_on_page>10000 else threads_number
+        scroll_points = [i/threads_number for i in range(threads_number+1)]
+        thread_list = [CategoryPageThread(i, category_url, number_of_scrolls, scroll_points[i], scroll_points[i+1], \
+                OcadoScraper._scroll_to_get_product_urls, headless=self.headless) for i in range(threads_number)]
+
+        [thread.start() for thread in thread_list] #start scraping on each thread
+        [thread.join() for thread in thread_list] #wait for threads to finish runnning
+        data = []
+        for thread in thread_list: #bring data together 
+            data.extend(thread.product_urls)
+        self.product_urls[category_name] = list(set(data))
+        
+        print(f"It took {datetime.now()-starting_time} seconds to scrape the urls from the {category_name} category page")
 
     # UTILITY function for the above function to scroll the page and get all the product urls on the page
     @staticmethod
@@ -152,20 +139,18 @@ class OcadoScraper:
 # This function is called by the PUBLIC function scrape_products() and scrapes the information and images for 
 # all products in the category and puts them in the product_data dictionary 
     def _scrape_product_data_for_category(self, category_name, download_images):
+        starting_time = datetime.now()
         product_details = {}
         split_urls_lists = OcadoScraper._split_list(self.product_urls[category_name], 4)
-        thread_list = []
-        for i in range(len(split_urls_lists)): #add threads to a list
-            thread_list.append(ScrapingProductsThread(i, split_urls_lists[i], OcadoScraper._scrape_product_data, download_images, headless=self.headless))
-        for thread in thread_list:
-            thread.start() #start scraping the urls allocated to each thread
-        while True: #wait for threads to finish running
-            threads_activity = [thread.active for thread in thread_list]
-            if True not in threads_activity:
-                break
+        thread_list = [ScrapingProductsThread(i, split_urls_lists[i], \
+                OcadoScraper._scrape_product_data, download_images, headless=self.headless) for i in range(len(split_urls_lists))]
+
+        [thread.start() for thread in thread_list] #start scraping on each thread
+        [thread.join() for thread in thread_list] #wait for threads to finish runnning
         for thread in thread_list: #bring the data together
             product_details.update(thread.product_details)
         self.product_data[category_name] = product_details
+        print(f"It took {datetime.now()-starting_time} seconds to scrape the products in the {category_name} category")
     
     @staticmethod
     def _scrape_product_data(driver, url, download_images):
@@ -341,111 +326,5 @@ if __name__ == '__main__':
 
 
 
-# ocado = OcadoScraper(True)
-# categories_to_scrape = ['Fresh & Chilled Food']
-# ocado.scrape_products(categories_to_scrape)
-#%%
-ocado = OcadoScraper()
-url = 'https://www.ocado.com/products/hovis-best-of-both-medium-sliced-22616011'
-data = ocado.scrape_product(url, True)
-pprint(data)
-#%%
-ocado = OcadoScraper()
-#%%
-ocado.download_images(['Frozen Food', 'Bakery' ])
-#%%
-ocado.categories_available_to_scrape()
-#%%
-ocado.get_categories_without_saved_product_data()
-#%%
-ocado = OcadoScraper()
-ocado.number_of_products_in_categories()
-ocado.categories_available_to_scrape()
-ocado.current_status_info()
-#%%
-# ocado.scrape_products(ocado.get_categories_without_saved_product_data())
-# ocado = OcadoScraper()
-# categories_to_scrape = [Toys, Games & Books, Baby, Parent & Kids]
-# ocado.scrape_products(categories_to_scrape)
-# print(len(ocado.product_urls["Clothing & Accessories"]))
-    #%%
-# ocado = OcadoScraper()
-# url = 'https://www.ocado.com/products/shatterproof-silver-multi-finish-baubles-pack-of-4-558717011'
-# data = ocado.scrape_product(url, False)
-# pprint(data)
-#%%
-# ocado = OcadoScraper()
-# ocado.categories_available_to_scrape()
-# ocado.get_categories_with_saved_product_data()
-# ocado.get_categories_without_saved_product_data()
-# ocado.scrape_products(ocado.get_categories_without_saved_product_data())
-
-# %%
-ocado = OcadoScraper()
-ocado.scrape_products(['Bakery'])
-# ocado.download_images(['Frozen Food', 'Bakery']) #default value is ALL categories
-# %%
-
-#test multithreading for scrape product urls
-# ocado = OcadoScraper()
-# category1 = 'Clothing & Accessories'
-# category3 = 'Food Cupboard'
-# url1 = 'https://www.ocado.com/browse/clothing-accessories-148232?display=943'
-# url2 = 'https://www.ocado.com/browse/christmas-317740?display=4958'
-# url3 ='https://www.ocado.com/browse/food-cupboard-20424?display=13989'
-# ocado._scrape_product_urls(url3, category3, threads_number=3)
-#%%
-#test multithreading for _scrape_product_data_for_category
-# ocado = OcadoScraper()
-
-# category1 = 'Clothing & Accessories'
-# category3 = 'Food Cupboard'
-# url1 = 'https://www.ocado.com/browse/clothing-accessories-148232?display=943'
-# url2 = 'https://www.ocado.com/browse/christmas-317740?display=4958'
-# url3 ='https://www.ocado.com/browse/food-cupboard-20424?display=13989'
-# ocado._scrape_product_urls(url3, category3, threads_number=3)
-# print('available',ocado.categories_available_to_scrape(),'\n')
-# print('saved',ocado.get_categories_with_saved_product_data(),'\n')
-# print('not saved',ocado.get_categories_without_saved_product_data(),'\n')
-#%%
-# ocado = OcadoScraper(scrape_categories=False)
-# ocado.scrape_products(categories=["Clothing & Accessories"])
-
-
-
 
 #%%
-
-#test headless
-# ocado = OcadoScraper()
-# a = ocado._scrape_category_urls()
-# ocado.driver.save_screenshot('screenie.png')
-# print(a)
-# ocado.driver.close()
-
-#%%
-# For _scrape_category_urls()
-# 1. there are more than 2 items
-# 2. keys are not empty strings
-# 3. urls(dictionary values) end in a number
-
-
-# _get_number_of_products()
-# https://www.ocado.com/browse?filters=vegetarian-19996
-# check that the number is bigger than 1
-#%%
-ocado = OcadoScraper()
-
-# %%
-# ocado.delete_saved_product_data_for_category('Fresh & Chilled Food')
-# %%
-ocado = OcadoScraper()
-ocado.current_status_info()
-
-
-
-# %%
-ocado.delete_saved_product_data_for_category('Fresh & Chilled Food')
-# %%
-
-# %%
