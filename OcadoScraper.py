@@ -244,7 +244,7 @@ class OcadoScraper:
         if os.path.exists(self.product_data_path):
             os.remove(self.product_data_path)
         else: 
-            print("Can not delete the file as it doesn't exist")
+            print("No stored data file")
             
     # Delete the saved product data for the specified category name. 
     # Used for example if a scrape of a category has gone wrong and not all the products have been scraped for that category.                     
@@ -327,7 +327,7 @@ class OcadoScraper:
                     image_list.download_all_images()
             else:
                 print(f'No stored data for {category} category')
- 
+
 ####################################################################### 
 # Other functions 
     def zoom_page(self, zoom_percentage=100):
