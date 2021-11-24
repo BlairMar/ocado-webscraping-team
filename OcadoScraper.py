@@ -7,6 +7,7 @@ import requests
 import time
 import json
 import os
+import shutil
 from pprint import pprint
 from ThreadingClass import CategoryPageThread
 from ThreadingClass import ScrapingProductsThread
@@ -169,9 +170,7 @@ class OcadoScraper:
     @staticmethod
     def _scrape_product_data(driver, url, download_images):
         product = Product(url)
-        if download_images:
-            product.download_images()
-        return product.scrape_product_data(driver)
+        return product.scrape_product_data(driver, download_images)
     
     @staticmethod
     def _split_list(lst, n):
@@ -256,7 +255,16 @@ class OcadoScraper:
             self._save_data("product_data", product_data) 
         else:
             print("No stored data file")
-
+            
+    # Beware! - deletes the folder storing all the images.  
+    @staticmethod                    
+    def delete_downloaded_images():
+        path = './data/images/'
+        try:
+            shutil.rmtree(path)
+        except OSError as e:
+            print("Error: %s : %s" % (path, e.strerror))                    
+            
     # Get the number of products saved to the product_data json file for the specified category name.
     def number_of_products_saved_from_category(self, category_name):
         if os.path.exists(self.product_data_path):
@@ -415,8 +423,8 @@ ocado.current_status_info()
 # _get_number_of_products()
 # https://www.ocado.com/browse?filters=vegetarian-19996
 # check that the number is bigger than 1
-
-# ocado = OcadoScraper()
+#%%
+ocado = OcadoScraper()
 
 # %%
 # ocado.delete_saved_product_data_for_category('Fresh & Chilled Food')

@@ -96,7 +96,7 @@ class Product:
         return self.sku
     
     # returns a dictionary of product information eg {Name: , Price :  ,Description : , ...., Image links : ... }            
-    def scrape_product_data(self, driver):
+    def scrape_product_data(self, driver, download_images):
         driver.get(self.url)
         for key, value in Product._get_xpaths().items():
             attribute_web_element = self._get_web_element_by_xpath_or_none(driver, key, value)
@@ -104,6 +104,8 @@ class Product:
                 self.product_information[key] = self._get_product_information(key, attribute_web_element)
             else:
                 self.product_information[key] = False if key == 'Out of Stock' else None
+        if download_images: 
+            self.download_images()
         return self.product_information 
 
     # downloads all the product images. Note: The function above must be called first to get the image list
