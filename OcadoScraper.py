@@ -226,12 +226,7 @@ class OcadoScraper:
      
     # Gets a list of categories that do not have saved product data. This list can be passed as a parameter to the scrape_products() function to scrape remaining categories                
     def get_categories_without_saved_product_data(self):
-        all_categories = {}
-        if os.path.exists(self.category_url_path):
-            all_categories = OcadoScraper._read_data(self.category_url_path).keys()
-        else: 
-            self._scrape_category_urls()
-            all_categories = self.category_urls.keys()
+        all_categories = self.category_urls.keys()
         if os.path.exists(self.product_data_path):
             stored_data = self.get_categories_with_saved_product_data().keys()
             return list(set(all_categories).difference(set(stored_data)))
@@ -250,8 +245,11 @@ class OcadoScraper:
     def delete_saved_product_data_for_category(self, category_name):
         if os.path.exists(self.product_data_path):            
             product_data = OcadoScraper._read_data(self.product_data_path) 
-            product_data.pop(category_name, "No stored data for that category")
-            self._save_data("product_data", product_data) 
+            if category_name in product_data.keys():
+                product_data.pop(category_name)
+                self._save_data("product_data", product_data) 
+            else:
+                print('No stored data for that category')
         else:
             print("No stored data file")
             
@@ -305,7 +303,8 @@ class OcadoScraper:
             self._scrape_product_data_for_category(category, download_images)
             self._save_data("product_data", self.product_data) #save the product_data dict into a json file after each scrape of a category, overwriting the file if it exists 
             print(f"Product data from the {category} category saved successfully")
-
+    
+    # Displays what information is scraped from a sample product page - this data is not saved
     def scrape_product(self, url, download_images=False):
         self.driver.get(url)
         OcadoScraper._accept_cookies(self.driver)
@@ -353,6 +352,8 @@ pprint(data)
 #%%
 ocado = OcadoScraper()
 #%%
+ocado.download_images(['Frozen Food', 'Bakery' ])
+#%%
 ocado.categories_available_to_scrape()
 #%%
 ocado.get_categories_without_saved_product_data()
@@ -382,7 +383,7 @@ ocado.current_status_info()
 # %%
 ocado = OcadoScraper()
 ocado.scrape_products(['Bakery'])
-ocado.download_images(['Frozen Food', 'Bakery']) #default value is ALL categories
+# ocado.download_images(['Frozen Food', 'Bakery']) #default value is ALL categories
 # %%
 
 #test multithreading for scrape product urls
