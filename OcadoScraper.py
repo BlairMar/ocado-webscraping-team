@@ -86,6 +86,7 @@ class OcadoScraper:
             self.category_urls[category_name] += '?display=' + number_of_products
         self._save_data("category_urls", self.category_urls)
         return self.category_urls
+    
 
     # UTILITY function for above function
     # only used in the function _scrape_category_urls() - gets the number of products in a category
@@ -328,3 +329,7 @@ if __name__ == '__main__':
 
 
 #%%
+# ocado = OcadoScraper()
+# ocado.categories_available_to_scrape()
+
+# %%
