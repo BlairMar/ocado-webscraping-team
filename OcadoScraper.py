@@ -139,10 +139,10 @@ class OcadoScraper:
 ##############################################################################################################################
 # This function is called by the PUBLIC function scrape_products() and scrapes the information and images for 
 # all products in the category and puts them in the product_data dictionary 
-    def _scrape_product_data_for_category(self, category_name, download_images):
+    def _scrape_product_data_for_category(self, category_name, download_images, threads_number=4):
         starting_time = datetime.now()
         product_details = {}
-        split_urls_lists = OcadoScraper._split_list(self.product_urls[category_name], 4)
+        split_urls_lists = OcadoScraper._split_list(self.product_urls[category_name], threads_number)
         thread_list = [ScrapingProductsThread(i, split_urls_lists[i], \
                 OcadoScraper._scrape_product_data, download_images, headless=self.headless) for i in range(len(split_urls_lists))]
 
@@ -278,7 +278,7 @@ class OcadoScraper:
         print(f'\nCategories left to scrape: \n {sorted(not_scraped.items(), key=lambda x: x[1], reverse=True)}')
                                           
     # Public function to scrape the products. Pass in a list of categories as a param. If there is saved product data this will be overwritten if we scrape again for the category
-    def scrape_products(self, categories="ALL", download_images=False):
+    def scrape_products(self, categories="ALL", download_images=False, threads_number=4):
         if categories == "ALL":
             categories = self.category_urls.keys()        
         for category in categories:
@@ -286,7 +286,7 @@ class OcadoScraper:
                 temp_dict = OcadoScraper._read_data(self.product_data_path) #read the data from the json dict into product_data dict attribute
                 self.product_data = temp_dict
             self._scrape_product_urls(self.category_urls[category], category)
-            self._scrape_product_data_for_category(category, download_images)
+            self._scrape_product_data_for_category(category, download_images, threads_number)
             self._save_data("product_data", self.product_data) #save the product_data dict into a json file after each scrape of a category, overwriting the file if it exists 
             print(f"Product data from the {category} category saved successfully")
     
