@@ -142,7 +142,7 @@ class OcadoScraper:
 ##############################################################################################################################
 # This function is called by the PUBLIC function scrape_products() and scrapes the information and images for 
 # all products in the category and puts them in the product_data dictionary 
-    def _scrape_product_data_for_category(self, category_name, download_images, threads_number=4):
+    def _scrape_product_data_for_category(self, category_name, download_images, threads_number=4, rewrite=False):
         starting_time = datetime.now()
         product_details = {}
         split_urls_lists = OcadoScraper._split_list(self.product_urls[category_name], threads_number)
@@ -153,7 +153,10 @@ class OcadoScraper:
         [thread.join() for thread in thread_list] #wait for threads to finish runnning
         for thread in thread_list: #bring the data together
             product_details.update(thread.product_details)
-        self.product_data[category_name] = product_details
+        if rewrite:
+            self.product_data[category_name] = product_details
+        else:
+            self.product_data[category_name].update(product_details)
         print(f"It took {datetime.now()-starting_time} seconds to scrape the products in the {category_name} category")
     
     @staticmethod
@@ -281,7 +284,7 @@ class OcadoScraper:
         print(f'\nCategories left to scrape: \n {sorted(not_scraped.items(), key=lambda x: x[1], reverse=True)}')
                                           
     # Public function to scrape the products. Pass in a list of categories as a param. If there is saved product data this will be overwritten if we scrape again for the category
-    def scrape_products(self, categories="ALL", download_images=False, limit=0, threads_number=4):
+    def scrape_products(self, categories="ALL", download_images=False, limit=0, threads_number=4, rewrite=False):
         if categories == "ALL":
             categories = self.category_urls.keys()        
         for category in categories:
@@ -289,7 +292,7 @@ class OcadoScraper:
                 temp_dict = OcadoScraper._read_data(self.product_data_path) #read the data from the json dict into product_data dict attribute
                 self.product_data = temp_dict
             self._scrape_product_urls(self.category_urls[category], category, limit=limit)
-            self._scrape_product_data_for_category(category, download_images, threads_number)
+            self._scrape_product_data_for_category(category, download_images=download_images, threads_number=threads_number, rewrite=rewrite)
             self._save_data("product_data", self.product_data) #save the product_data dict into a json file after each scrape of a category, overwriting the file if it exists 
             print(f"Product data from the {category} category saved successfully")
     
