@@ -4,7 +4,7 @@ from selenium.webdriver.common.by import By
 from datetime import datetime
 
 class CategoryPageThread(threading.Thread):
-    def __init__(self, threadID, url, number_of_scrolls, start_scrolling_at, stop_scrolling_at, func, headless=True):
+    def __init__(self, threadID, url, number_of_scrolls, start_scrolling_at, stop_scrolling_at, func, headless=True, limit=0):
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.url = url
@@ -13,6 +13,7 @@ class CategoryPageThread(threading.Thread):
         self.stop_scrolling_at = stop_scrolling_at
         self.func = func # OcadoScraper._scroll_to_get_product_urls()
         self.headless = headless
+        self.limit = limit
         self.chrome_options = webdriver.ChromeOptions()
         if self.headless:
             self.chrome_options.add_argument("--headless")
@@ -44,7 +45,7 @@ class CategoryPageThread(threading.Thread):
         between self.start_scrolling_at and self.stop scrolling_at fractions of the page length
         are collected in self.product_urls
         """
-        self.product_urls = self.func(self.driver, self.number_of_scrolls, self.start_scrolling_at, self.stop_scrolling_at)
+        self.product_urls = self.func(self.driver, self.number_of_scrolls, self.start_scrolling_at, self.stop_scrolling_at, limit=self.limit)
         self.active = False
 
 
