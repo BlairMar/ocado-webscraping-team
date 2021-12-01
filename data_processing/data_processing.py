@@ -57,24 +57,25 @@ class Data_Processing:
         return self.dictionary_of_category_dataframes[category_name]
     
     def get_number_of_unique_products(self):
-        return len(self.get_dataframe_all_product_data_excl_list_cols().index)
+        return len(self.get_df_all_product_data_excl_list_cols().index)
 
 ###################################################################    
 # the following functions are used to create dataframes, normalizing the data so we can export to SQL 
-    def get_dataframe_all_product_data_excl_list_cols(self):
-        return self.all_products_df[self.all_products_df.columns[:-3]].drop_duplicates('sku')
+    def get_df_all_product_data_excl_list_cols(self):
+        return self.all_products_df[self.all_products_df.columns[:-3]].drop_duplicates('sku').reset_index().drop('index', axis=1)
     
-    def get_dataframe_of_sku_and_scraping_categories(self):
-        return self.all_products_df[['sku', 'scraping_category']] 
+    def get_df_of_sku_and_scraping_categories(self):
+        return self.all_products_df[['sku', 'scraping_category']].reset_index().drop('index', axis=1)
     
-    def get_dataframe_of_sku_and_product_images(self):
-        return self.all_products_df[['sku', 'image_links']].drop_duplicates('sku').explode('image_links').sort_values('sku')
+    def get_df_of_sku_and_product_images(self):
+        return self.all_products_df[['sku', 'image_links']].drop_duplicates('sku').explode('image_links').sort_values('sku').reset_index().drop('index', axis=1)
     
-    def get_dataframe_of_sku_and_all_categories(self):
-        return self.all_products_df[['sku', 'categories']].drop_duplicates('sku').explode('categories').sort_values('sku')
+    def get_df_of_sku_and_all_categories(self):
+        return self.all_products_df[['sku', 'categories']].drop_duplicates('sku').explode('categories').sort_values('sku').reset_index().drop('index', axis=1)
 
-    def get_dataframe_of_all_categories(self):
-        return pd.DataFrame(self.get_dataframe_of_sku_and_all_categories()['categories'].unique())
+    def get_df_of_all_categories(self):
+        df =  pd.DataFrame(self.get_df_of_sku_and_all_categories()['categories'].unique())
+        return df.rename(columns={df.columns[0]: "categories" })
                 
 #%%    
 process_data = Data_Processing()
