@@ -20,31 +20,34 @@ USER = 'postgres'
 PASSWORD = '' #### Add password in here ###
 PORT = 5432
 DATABASE = 'ocado'
-engine = create_engine(f"{DATABASE_TYPE}+{DBAPI}://{USER}:{PASSWORD}@{ENDPOINT}:{PORT}/{DATABASE}")
-#%%
-engine.connect()
-#%%
-process_data = Data_Processing()
-#%%
-all_product_information = process_data.get_df_all_product_data_excl_list_cols()
-all_product_information.to_sql('all_products_information', engine, if_exists='replace', index=False)
-#%%
-product_images = process_data.get_df_of_sku_and_product_images()
-product_images.to_sql('product_images', engine, if_exists='replace', index=False)
-#%%
-product_scraping_categories = process_data.get_df_of_sku_and_scraping_categories()
-product_scraping_categories.to_sql('product_scraping_categories', engine, if_exists='replace', index=False)
-#%%
-product_all_categories = process_data.get_df_of_sku_and_all_categories()
-product_all_categories.to_sql('product_all_categories', engine, if_exists='replace', index=False)
-#%%
-all_categories = process_data.get_df_of_all_categories()
-all_categories.to_sql('all_categories', engine, if_exists='replace', index=False)
 
+class Export_to_AWS_RDS:
+    def __init__(self):
+        self.engine = create_engine(f"{DATABASE_TYPE}+{DBAPI}://{USER}:{PASSWORD}@{ENDPOINT}:{PORT}/{DATABASE}")
+        self.engine.connect()
+        self.process_data = Data_Processing()
+        
+    def export_all_product_information(self):
+        self.process_data.get_df_all_product_data_excl_list_cols().to_sql('all_products_information', engine, if_exists='replace', index=False)   
+        
+    def export_product_images(self):
+       self.process_data.get_df_of_sku_and_product_images().to_sql('product_images', engine, if_exists='replace', index=False)
+
+    def export_product_scraping_categories(self):
+        self.process_data.get_df_of_sku_and_scraping_categories().to_sql('product_scraping_categories', engine, if_exists='replace', index=False)
+
+    def export_product_all_categories(self):
+        self.process_data.get_df_of_sku_and_all_categories().to_sql('product_all_categories', engine, if_exists='replace', index=False)
+
+    def export_all_categories(self):
+        self.process_data.get_df_of_all_categories().to_sql('all_categories', engine, if_exists='replace', index=False)
+
+    def export_product_data_by_category(self):
+        for category, df in self.process_data.get_dictionary_of_dataframes().items():
+            table_name = category.lower() 
+            table_name = table_name.replace(' ','_') 
+            df.to_sql(f'{table_name}', engine, if_exists='replace', index=False)
+            
 #%%
-dict_dfs = process_data.get_dictionary_of_dataframes()
-for category, df in dict_dfs.items():
-    table_name = category.lower() 
-    table_name = table_name.replace(' ','_') 
-    df.to_sql(f'{table_name}', engine, if_exists='replace', index=False)
-#%%
+export = Export_to_AWS_RDS()
+export.export_product_data_by_category()
