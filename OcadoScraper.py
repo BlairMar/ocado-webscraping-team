@@ -109,6 +109,7 @@ class OcadoScraper:
         number_of_scrolls = number_of_products_on_page/35
         threads_number = 1 if number_of_products_on_page<1500 else 3 if number_of_products_on_page>10000 else threads_number
         scroll_points = [i/threads_number for i in range(threads_number+1)]
+
         thread_list = [CategoryPageThread(i, category_url, number_of_scrolls, scroll_points[i], scroll_points[i+1], \
                 OcadoScraper._scroll_to_get_product_urls, headless=self.headless) for i in range(threads_number)]
 
@@ -139,10 +140,13 @@ class OcadoScraper:
 ##############################################################################################################################
 # This function is called by the PUBLIC function scrape_products() and scrapes the information and images for 
 # all products in the category and puts them in the product_data dictionary 
-    def _scrape_product_data_for_category(self, category_name, download_images, threads_number=4):
+    def _scrape_product_data_for_category(self, category_name, download_images, threads_number=4, limit=0):
         starting_time = datetime.now()
         product_details = {}
-        split_urls_lists = OcadoScraper._split_list(self.product_urls[category_name], threads_number)
+        if limit:
+            split_urls_lists = OcadoScraper._split_list(self.product_urls[category_name][:limit], threads_number)
+        else:
+            split_urls_lists = OcadoScraper._split_list(self.product_urls[category_name], threads_number)
         thread_list = [ScrapingProductsThread(i, split_urls_lists[i], \
                 OcadoScraper._scrape_product_data, download_images, headless=self.headless) for i in range(len(split_urls_lists))]
 
@@ -278,7 +282,7 @@ class OcadoScraper:
         print(f'\nCategories left to scrape: \n {sorted(not_scraped.items(), key=lambda x: x[1], reverse=True)}')
                                           
     # Public function to scrape the products. Pass in a list of categories as a param. If there is saved product data this will be overwritten if we scrape again for the category
-    def scrape_products(self, categories="ALL", download_images=False, threads_number=4):
+    def scrape_products(self, categories="ALL", download_images=False, threads_number=4, limit=0):
         if categories == "ALL":
             categories = self.category_urls.keys()        
         for category in categories:
@@ -286,7 +290,7 @@ class OcadoScraper:
                 temp_dict = OcadoScraper._read_data(self.product_data_path) #read the data from the json dict into product_data dict attribute
                 self.product_data = temp_dict
             self._scrape_product_urls(self.category_urls[category], category)
-            self._scrape_product_data_for_category(category, download_images, threads_number)
+            self._scrape_product_data_for_category(category, download_images, threads_number, limit)
             self._save_data("product_data", self.product_data) #save the product_data dict into a json file after each scrape of a category, overwriting the file if it exists 
             print(f"Product data from the {category} category saved successfully")
     
