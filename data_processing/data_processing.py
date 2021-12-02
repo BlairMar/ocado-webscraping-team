@@ -2,24 +2,23 @@
 import sys
 import inspect
 import os
+import json
 import pandas as pd
-
-#### For importing files in the repo
-current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-parent_dir = os.path.dirname(current_dir)
-sys.path.insert(0, parent_dir)
-
-from OcadoScraper import OcadoScraper
 
 class Data_Processing:
     def __init__(self):
         self.product_data_path = self.data_path = '../data/product_data'
-        self.scraper = OcadoScraper() 
-        self.raw_product_data = self.scraper._read_data(self.product_data_path)
+        self.raw_product_data = Data_Processing._read_data(self.product_data_path)
         self.dictionary_of_category_dataframes = {}
         self._product_data_to_dataframes() # populate dictionary_of_category_dataframes
         self.all_products_df = pd.DataFrame()
         self._all_products_df() # populate dataframe _all_products_df 
+
+    @staticmethod
+    def _read_data(path):
+        with open(path) as f:
+            data = f.read()
+            return json.loads(data) 
         
     # populates self.dictionary_of_category_dataframes which is a dictionary of dataframes, one for each category
     # drops any duplicates within the category in case there are any
@@ -28,7 +27,7 @@ class Data_Processing:
                 df_for_category = pd.DataFrame.from_records(value).transpose()
                 df_for_category.index.names = ['Sku']
                 category = [key] * len(value.items())  # adding a column for the category
-                Data_Processing.reformat_column_names(df_for_category)
+                Data_Processing._reformat_column_names(df_for_category)
                 df_for_category.index.names = ['sku']
                 df_for_category['scraping_category'] = category              
                 self.dictionary_of_category_dataframes[key] = (df_for_category
@@ -36,7 +35,7 @@ class Data_Processing:
                                 .drop_duplicates(subset=['sku'], keep='first')) 
              
     @staticmethod          
-    def reformat_column_names(dataframe):        
+    def _reformat_column_names(dataframe):        
         dataframe.columns = dataframe.columns.str.lower()
         dataframe.columns = dataframe.columns.str.replace(' ','_')
                 
@@ -46,7 +45,7 @@ class Data_Processing:
     # Only call in the initialiser
     def _all_products_df(self):
         temp_df = pd.concat(self.dictionary_of_category_dataframes.values(), ignore_index=True)
-        Data_Processing.reformat_column_names(temp_df)
+        Data_Processing._reformat_column_names(temp_df)
         self.all_products_df = temp_df
         
 ######################################################################   
@@ -86,6 +85,6 @@ class Data_Processing:
         return df.rename(columns={df.columns[0]: "categories" })
                 
 #%%    
-# process_data = Data_Processing()
+process_data = Data_Processing()
 
 # %%

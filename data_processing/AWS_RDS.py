@@ -64,11 +64,11 @@ class Export_to_AWS_RDS:
     # Note: the list entries are not transformed in these table and are still in list format
     def export_product_data_by_category(self):
         for category, df in self.process_data.get_dictionary_of_dataframes().items():      
-            table_name = Export_to_AWS_RDS.reformat_string(category)   
+            table_name = Export_to_AWS_RDS._reformat_string(category)   
             df.to_sql(f'{table_name}', self.engine, if_exists='replace', index=False)
           
     @staticmethod          
-    def reformat_string(string):   
+    def _reformat_string(string):   
         return string.lower().replace(' ', '_').replace('&', '').replace(',', '').replace('__', '_')
                   
 #%%
