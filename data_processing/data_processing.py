@@ -28,22 +28,25 @@ class Data_Processing:
                 df_for_category = pd.DataFrame.from_records(value).transpose()
                 df_for_category.index.names = ['Sku']
                 category = [key] * len(value.items())  # adding a column for the category
-                df_for_category.columns= df_for_category.columns.str.lower()
-                df_for_category.columns = df_for_category.columns.str.replace(' ','_')
+                Data_Processing.reformat_column_names(df_for_category)
                 df_for_category.index.names = ['sku']
                 df_for_category['scraping_category'] = category              
                 self.dictionary_of_category_dataframes[key] = (df_for_category
                                 .reset_index()
                                 .drop_duplicates(subset=['sku'], keep='first')) 
-               
+             
+    @staticmethod          
+    def reformat_column_names(dataframe):        
+        dataframe.columns = dataframe.columns.str.lower()
+        dataframe.columns = dataframe.columns.str.replace(' ','_')
+                
     # Populates the all_products_df dataframe attribute. 
     # This attribute is a concatenated dataframe where the last column will be different depending on the category the product was scraped in
     # Note this dataframe will have more than one row for a product if the product is in more than one scraping category
     # Only call in the initialiser
     def _all_products_df(self):
         temp_df = pd.concat(self.dictionary_of_category_dataframes.values(), ignore_index=True)
-        temp_df.columns= temp_df.columns.str.lower()
-        temp_df.columns = temp_df.columns.str.replace(' ','_')
+        Data_Processing.reformat_column_names(temp_df)
         self.all_products_df = temp_df
         
 ######################################################################   
@@ -83,6 +86,6 @@ class Data_Processing:
         return df.rename(columns={df.columns[0]: "categories" })
                 
 #%%    
-process_data = Data_Processing()
+# process_data = Data_Processing()
 
 # %%
