@@ -22,8 +22,8 @@ PORT = 5432
 DATABASE = 'ocado' 
 
 class Export_to_AWS_RDS:
-    def __init__(self):
-        self.engine = create_engine(f"{DATABASE_TYPE}+{DBAPI}://{USER}:{PASSWORD}@{ENDPOINT}:{PORT}/{DATABASE}")
+    def __init__(self, database_type=DATABASE_TYPE, dbapi=DBAPI, user=USER, port=PORT, endpoint=ENDPOINT, password=PASSWORD, database=DATABASE):
+        self.engine = create_engine(f"{database_type}+{dbapi}://{user}:{password}@{endpoint}:{port}/{database}")
         self.engine.connect()
         self.process_data = Data_Processing()
         
@@ -31,7 +31,7 @@ class Export_to_AWS_RDS:
   # Normalized data  
   
     # Creates a table 'all_products_information' in SQL of all products on the ocado website and all information that was not scraped in list form
-    def export_all_product_information(self):
+    def export_all_products_information(self):
         self.process_data.get_df_all_product_data_excl_list_cols().to_sql('all_products_information', self.engine, if_exists='replace', index=False)   
         
     # Creates a table 'product_images' where the list of image links for each product are extracted into a separate table to satisfy the first normal form
@@ -52,7 +52,7 @@ class Export_to_AWS_RDS:
         
     # Just calls the 5 functions above to get all the tables
     def export_all_normalized_tables(self):
-        self.export_all_product_information()
+        self.export_all_products_information()
         self.export_product_images()
         self.export_product_scraping_categories()
         self.export_product_all_categories()
@@ -73,5 +73,14 @@ class Export_to_AWS_RDS:
                   
 #%%
 export = Export_to_AWS_RDS()
+
+# Fill in your details below
+# Note: create server with endpoint details in pgAdmin and a database inside the server to view the tables 
+# export = Export_to_AWS_RDS(endpoint='', password='', database='')
+#%%
 export.export_all_normalized_tables()
+# %%
+
+
+
 # %%
