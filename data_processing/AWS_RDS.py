@@ -61,7 +61,7 @@ class Export_to_AWS_RDS:
 ###########################################################
 
     # Creates a separate table for each category including all the scraped information
-    # Note: the list entries are not transformed in these table and are still in list format
+    # Note: the list entries are not transformed in these tables and are still in list format
     def export_product_data_by_category(self):
         for category, df in self.process_data.get_dictionary_of_dataframes().items():      
             table_name = Export_to_AWS_RDS._reformat_string(category)   
@@ -76,11 +76,7 @@ export = Export_to_AWS_RDS()
 
 # Fill in your details below
 # Note: create server with endpoint details in pgAdmin and a database inside the server to view the tables 
-# export = Export_to_AWS_RDS(endpoint='', password='', database='')
+export = Export_to_AWS_RDS(endpoint='', password='', database='')
 #%%
 export.export_all_normalized_tables()
-# %%
-
-
-
 # %%
