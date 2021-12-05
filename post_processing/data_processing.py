@@ -5,10 +5,10 @@ import os
 import json
 import pandas as pd
 
-class Data_Processing:
+class DataProcessing:
     def __init__(self):
         self.product_data_path = self.data_path = '../data/product_data'
-        self.raw_product_data = Data_Processing._read_data(self.product_data_path)
+        self.raw_product_data = DataProcessing._read_data(self.product_data_path)
         self.dictionary_of_category_dataframes = {}
         self._product_data_to_dataframes() # populate dictionary_of_category_dataframes
         self.all_products_df = pd.DataFrame()
@@ -27,7 +27,7 @@ class Data_Processing:
                 df_for_category = pd.DataFrame.from_records(value).transpose()
                 df_for_category.index.names = ['Sku']
                 category = [key] * len(value.items())  # adding a column for the category
-                Data_Processing._reformat_column_names(df_for_category)
+                DataProcessing._reformat_column_names(df_for_category)
                 df_for_category.index.names = ['sku']
                 df_for_category['scraping_category'] = category              
                 self.dictionary_of_category_dataframes[key] = (df_for_category
@@ -45,7 +45,7 @@ class Data_Processing:
     # Only call in the initialiser
     def _all_products_df(self):
         temp_df = pd.concat(self.dictionary_of_category_dataframes.values(), ignore_index=True)
-        Data_Processing._reformat_column_names(temp_df)
+        DataProcessing._reformat_column_names(temp_df)
         self.all_products_df = temp_df
         
 ######################################################################   
@@ -81,6 +81,6 @@ class Data_Processing:
         return df.rename(columns={df.columns[0]: "categories" })
                 
 #%%    
-#process_data = Data_Processing()
+#process_data = DataProcessing()
 
 # %%
