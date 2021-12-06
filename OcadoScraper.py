@@ -280,6 +280,7 @@ class OcadoScraper:
             print(f'\nCategories scraped already and number of products scraped: \n {sorted(saved.items(), key=lambda x: x[1], reverse=True)}')
         not_scraped = self.number_of_products_in_categories(self.get_categories_without_saved_product_data())
         print(f'\nCategories left to scrape: \n {sorted(not_scraped.items(), key=lambda x: x[1], reverse=True)}')
+        return True
                                           
     # Public function to scrape the products. Pass in a list of categories as a param. If there is saved product data this will be overwritten if we scrape again for the category
     def scrape_products(self, categories="ALL", download_images=False, threads_number=4, limit=0):

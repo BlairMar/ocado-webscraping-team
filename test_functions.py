@@ -1,175 +1,18 @@
-#%%
-# from product import Product
-# from selenium import webdriver
-# from selenium.webdriver.common.by import By
-
-# with open('product_urls_for_testing', 'r') as f:
-#     lines = f.readlines()
-
-# urls_list = []
-# for line in lines:
-#     urls_list.append(line)
-
-# chrome_options = webdriver.ChromeOptions()
-# chrome_options.add_argument("--start-maximized")
-# driver = webdriver.Chrome(options=chrome_options)
-# driver.maximize_window()
-
-# info_list = []
-# for url in urls_list:
-#     product = Product(url)
-#     info = product.scrape_product_data(driver)
-#     info_list.append(info)
-
-# for dict in info_list:
-#     for key, value in dict.items():
-#         if value == None:
-#             print(f'{dict["Name"]} has a missing value at {key}')
-
-
-
-
-#%%
-from product import Product
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-
-with open('product_urls_for_testing', 'r') as f:
-    lines = f.readlines()
-urls_list = []
-for line in lines:
-    urls_list.append(line)
-
-chrome_options = webdriver.ChromeOptions()
-chrome_options.add_argument("--start-maximized")
-driver = webdriver.Chrome(options=chrome_options)
-driver.maximize_window()
-info_list = []
-for i, url in enumerate(urls_list):
-    print(f'{i/70*100}% done')
-    product = Product(url)
-    product.download_images
-    info = product.scrape_product_data(driver, product.download_images)
-    info_list.append(info)
-
-missing_keys = {key : 0 for key in info_list[0].keys()}
-for dict in info_list:
-    counter = 0
-    print(dict)
-    for key, value in dict.items():
-        if value == None:
-            missing_keys[key] += 1
-            print(dict['URL'])
-            print(f'{dict["Name"]} has a missing value at {key}/n')
-        elif value != None:
-            counter += 1
-print(missing_keys)
-print(counter)
-
-
-
 # %%
 # # For importing files in the repo
 # current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 # parent_dir = os.path.dirname(current_dir)
 # sys.path.insert(0, parent_dir)
-
-
-# %%
-# from product import Product
-# from selenium import webdriver
-# from selenium.webdriver.common.by import By
-# import unittest
-
-# class ProductTestCase(unittest.TestCase):
-#     def setUp(self):
-#         self.chrome_options = webdriver.ChromeOptions()
-#         self.chrome_options.add_argument("--start-maximized")
-#         self.driver = webdriver.Chrome(options=self.chrome_options)
-#         self.driver.maximize_window()
-
-#     def test_scrape_product_data(self):
-#         '''
-#         Tests scrape_product_data to find any missing information and counts the number of missing information
-#         '''
-#         with open('product_urls_for_testing', 'r') as f:
-#             lines = f.readlines()
-#         urls_list = []
-#         for line in lines:
-#             urls_list.append(line)
-
-#         info_list = []
-#         for i, url in enumerate(urls_list):
-#             print(f'{i/70*100}% done')
-#             self.product = Product(url)
-#             self.product.download_images
-#             info = self.product.scrape_product_data(self.driver, self.product.download_images)
-#             info_list.append(info)
-
-#         missing_keys = {key : 0 for key in info_list[0].keys()}
-#         for dict in info_list:
-#             counter = 0
-#             for key, value in dict.items():
-#                 if value == None:
-#                     missing_keys[key] += 1
-#                     print(dict['URL'])
-#                     print(f'{dict["Name"]} has a missing value at {key}/n')
-#                 elif value != None:
-#                     counter += 1
-#             self.assertGreaterEqual(counter, 1)
-#         print(missing_keys)
-
-# unittest.main(argv=[''], verbosity=2, exit=False)
-
-
-
-# %%
-# from product import Product
-# from selenium import webdriver
-# from selenium.webdriver.common.by import By
-# import unittest
-
-# class ProductTestCase(unittest.TestCase):
-#     def setUp(self):
-#         with open('product_urls_for_testing', 'r') as f:
-#             lines = f.readlines()
-#         urls_list = []
-#         for line in lines:
-#             urls_list.append(line)
-
-#         for url in urls_list:
-#             self.scrape = Product(url)
-#             self.get_sku = self.scrape.get_sku()
-
-#     def test_get_sku(self):
-#         '''
-#         Tests get_sku to see if sku is bigger than 1 and if they are a string of numbers.
-#         '''
-#         self.assertGreaterEqual(len(self.get_sku), 1)
-#         self.get_sku_int = int(self.get_sku)
-#         self.assertIsInstance(self.get_sku, str)
-#         self.assertIsInstance(self.get_sku_int, int)
-
-#     def tearDown(self):
-#         del self.scrape
-
-# unittest.main(argv=[''], verbosity=2, exit=False)
-
-
 
 # %%
 # This cell is the unit test for Product. OFFICIAL!
-# # For importing files in the repo
-# current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-# parent_dir = os.path.dirname(current_dir)
-# sys.path.insert(0, parent_dir)
 
 from product import Product
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import unittest
 from OcadoScraper import OcadoScraper
-
+import os
 
 class ProductTestCase(unittest.TestCase):
 
@@ -195,6 +38,7 @@ class ProductTestCase(unittest.TestCase):
             info = product.scrape_product_data(cls.driver, product.download_images)
             cls.info_list.append(info)
             cls.sku_list.append(product.get_sku())
+
             if i == 5:
                 break
     
@@ -230,7 +74,18 @@ class ProductTestCase(unittest.TestCase):
             self.assertIsInstance(sku, str)
             self.assertIsInstance(get_sku_int, int)
 
-
+    def test_download_images(self):
+        '''
+        Tests to see if path to image file exists.
+        '''
+        product = Product('https://www.ocado.com/products/clearwipe-microfibre-lens-wipes-544774011')
+        product.download_images
+        product.scrape_product_data(self.driver, product.download_images)
+        path_pwd = os.path.abspath(os.getcwd())
+        # image_sku = url.split('-')[-1]
+        image_path = os.path.isdir(f'{path_pwd}/data/images/544774011')
+        self.assertTrue(image_path)
+    
     def tearDown(self):
         pass
     #     print('tearDown')
@@ -257,10 +112,13 @@ import os
 import json
 
 scraper = OcadoScraper()
-scraper._scrape_category_urls()
-
-
-
+scraper.scrape_products(categories=['Bakery'], threads_number=1, limit=5)
+scraper.number_of_products_in_categories()
+max_number_products = sum(scraper.number_of_products_in_categories().values())
+print()
+print(max_number_products)
+print()
+scraper.current_status_info()
 
 # %%
 #OcadoScraper OFFICIAL TEST!
@@ -310,7 +168,7 @@ class OcadoScraperTestCase(unittest.TestCase):
         for number_of_products in number_of_products_in_categories.values():
             self.assertGreaterEqual(number_of_products, 1)
     
-    def test07_scrape_product(self):
+    def test08_scrape_product(self):
         product_info = self.scraper.scrape_product(self.url_for_testing, download_images=True)
         key_dict = ['URL', 'Name', 'Description', 'Price', 'Price per', 'Offers', 'Rating', 'Ingredients', 'Usage', 'Nutrition', 'Brand details', 'Out of Stock', 'Image links', 'Categories']
         for key in product_info.keys():
@@ -326,110 +184,119 @@ class OcadoScraperTestCase(unittest.TestCase):
             sku_list = [sku for sku in product_dict.keys()]
             self.assertEquals(len(sku_list), self.LIMIT)
 
-    def test04_get_number_products_saved_from_category(self):
+    def test05_get_number_products_saved_from_category(self):
         number_of_products = self.scraper.number_of_products_saved_from_category('Bakery')
         self.assertEquals(number_of_products, self.LIMIT)
 
-    def test02_get_categories_with_saved_product_data(self):
+    def test03_get_categories_with_saved_product_data(self):
         self.categories_with_saved_product_data = self.scraper.get_categories_with_saved_product_data()
         for category, number in self.categories_with_saved_product_data.items():
             self.category = category
             self.assertEquals(category, self.category_for_testing)
             self.assertEquals(number, self.LIMIT)
 
-    def test03_get_categories_without_saved_product_data(self):
+    def test04_get_categories_without_saved_product_data(self):
         self.categories_with_saved_product_data = self.scraper.get_categories_with_saved_product_data()
         self.categories_without_saved_product_data = self.scraper.get_categories_without_saved_product_data()
         for category_name in self.categories_without_saved_product_data:
             self.assertNotEqual(category_name, self.categories_with_saved_product_data.keys())
     
-    def test05_delete_saved_product_data_for_category(self):
+    def test06_delete_saved_product_data_for_category(self):
         self.scraper.delete_saved_product_data_for_category(self.category_for_testing)
         with open(f'{self.path_pwd}/data/product_data') as json_file:
             data = json.load(json_file) 
         self.assertEquals(len(data), 0)
     
-    def test06_delete_saved_product_data(self):
+    def test07_delete_saved_product_data(self):
         self.scraper.delete_saved_product_data()
         products_path_bool = os.path.isfile(f'{self.path_pwd}/data/product_data')
         self.assertFalse(products_path_bool)
 
-    def test08_download_images(self):
+    def test09_download_images(self):
         url_sku = self.url_for_testing.split('-')[-1]
         images_path_sku_bool = os.path.isdir(f'{self.path_pwd}/data/images/{url_sku}')
         self.assertTrue(images_path_sku_bool)
     
-    def test09_delete_downloaded_images(self):
+    def test10_delete_downloaded_images(self):
         self.scraper.delete_downloaded_images()
         images_path_bool = os.path.isdir(f'{self.path_pwd}/data/images/')
         self.assertFalse(images_path_bool)
     
+    def test02_current_status_info(self):
+        self.assertTrue(self.scraper.current_status_info())
+
     def tearDown(self):
         del self.scraper
-
-unittest.main(argv=[''], verbosity=2, exit=False)
-# %%
-# This cell is to test functions for Product.
-from product import Product
-from OcadoScraper import OcadoScraper
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-
-chrome_options = webdriver.ChromeOptions()
-chrome_options.add_argument("--start-maximized")
-driver = webdriver.Chrome(options=chrome_options)
-driver.maximize_window()
-
-product = Product('https://www.ocado.com/products/clearwipe-microfibre-lens-wipes-544774011')
-product.download_images
-product.scrape_product_data(driver, product.download_images)
-
-
-
-# %%
-# This cell is to test out new tests on Product.
-from product import Product
-from OcadoScraper import OcadoScraper
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-import unittest
-import os.path
-
-class ProductTestCase(unittest.TestCase):
-    def test_download_images(self):
-        '''
-        Tests to see if path to image file exists.
-        '''
-        chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument("--start-maximized")
-        driver = webdriver.Chrome(options=chrome_options)
-        driver.maximize_window()
-
-        product = Product('https://www.ocado.com/products/clearwipe-microfibre-lens-wipes-544774011')
-        product.download_images
-        product.scrape_product_data(driver, product.download_images)
-        path_pwd = os.path.abspath(os.getcwd())
-        image_path = os.path.isfile(f'{path_pwd}/data/images/544774011/0.jpg')
-        self.assertTrue(image_path)
 
 unittest.main(argv=[''], verbosity=2, exit=False)
 
 # %%
 # This cell is to test functions for Product_Images.
+
 from product import Product
-from OcadoScraper import OcadoScraper
-from images import Product_Images
 from selenium import webdriver
-from selenium.webdriver.common.by import By
+from images import Product_Images
+from OcadoScraper import OcadoScraper
+
+potato_url = 'https://www.ocado.com/products/ocado-sweet-potatoes-544565011'
+
+potato_product = Product(potato_url)
+
+potato_sku = potato_product.get_sku()
+
+driver = webdriver.Chrome() # you need a driver to call _get_web_element_by_xapth_or_none
+# you probably already have a driver in your testing class
+driver.get(potato_url)
+
+image_xpath = potato_product._get_xpaths()['Image links']
+potato_image_web_objects = potato_product._get_web_element_by_xpath_or_none(driver, 'Image links', image_xpath)
+print(potato_image_web_objects)
+#ASSERT HERE THAT potato_image_web_objects is not an empty list
+
+potato_product_images = Product_Images(potato_sku)
+potato_product_images.scrape_images(potato_image_web_objects)
+potato_product_images.download_all_images()
+#NOW CHECK THERE ARE IMAGES IN THE IMAGES FOLDER
+
+# %%
+from product import Product
+from selenium import webdriver
+from images import Product_Images
+from OcadoScraper import OcadoScraper
 import unittest
-import os.path
+import os
 
-chrome_options = webdriver.ChromeOptions()
-chrome_options.add_argument("--start-maximized")
-driver = webdriver.Chrome(options=chrome_options)
-driver.maximize_window()
+class Product_ImagesTestCase(unittest.TestCase):
 
-images = Product_Images()
-images.scrape_images()
+    @classmethod
+    def setUpClass(cls):
+        potato_url = 'https://www.ocado.com/products/ocado-sweet-potatoes-544565011'
+        cls.potato_product = Product(potato_url)
+        cls.potato_sku = cls.potato_product.get_sku()
+        cls.driver = webdriver.Chrome() # you need a driver to call _get_web_element_by_xapth_or_none
+        # you probably already have a driver in your testing class
+        cls.driver.get(potato_url)
+        cls.potato_product_images = Product_Images(cls.potato_sku)
+
+    def test_scrape_images(self):
+        image_xpath = self.potato_product._get_xpaths()['Image links']
+        potato_image_web_objects = self.potato_product._get_web_element_by_xpath_or_none(self.driver, 'Image links', image_xpath)
+        print(potato_image_web_objects)
+        #ASSERT HERE THAT potato_image_web_objects is not an empty list
+        self.assertGreaterEqual(len(potato_image_web_objects), 0)
+        self.potato_product_images.scrape_images(potato_image_web_objects)
+
+    def test_download_all_images(self):
+        self.potato_product_images.download_all_images()
+        path_pwd = os.path.abspath(os.getcwd())
+        images_path_bool = os.path.isfile(f'{path_pwd}/data/images/544565011/0.jpg')
+        self.assertTrue(images_path_bool)
+        #NOW CHECK THERE ARE IMAGES IN THE IMAGES FOLDER
+    
+    @classmethod
+    def tearDownClas(cls):
+        del cls.driver
+
+unittest.main(argv=[''], verbosity=2, exit=False)
 
 # %%
