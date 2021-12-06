@@ -42,7 +42,6 @@ class DataProcessing:
     # Populates the all_products_df dataframe attribute. 
     # This attribute is a concatenated dataframe where the last column will be different depending on the category the product was scraped in
     # Note this dataframe will have more than one row for a product if the product is in more than one scraping category
-    # Only call in the initialiser
     def _all_products_df(self):
         temp_df = pd.concat(self.dictionary_of_category_dataframes.values(), ignore_index=True)
         DataProcessing._reformat_column_names(temp_df)
