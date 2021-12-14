@@ -103,22 +103,7 @@ unittest.main(argv=[''], verbosity=2, exit=False)
 
 
 # %%
-# This cell is to test out functions from OcadoScraper.
-from product import Product
-from OcadoScraper import OcadoScraper
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-import os
-import json
 
-scraper = OcadoScraper()
-scraper.scrape_products(categories=['Bakery'], threads_number=1, limit=5)
-scraper.number_of_products_in_categories()
-max_number_products = sum(scraper.number_of_products_in_categories().values())
-print()
-print(max_number_products)
-print()
-scraper.current_status_info()
 
 # %%
 #OcadoScraper OFFICIAL TEST!
@@ -144,7 +129,7 @@ class OcadoScraperTestCase(unittest.TestCase):
         Testing _scrape_category_urls for blank keys in dictionary and if urls are showing the display figure.
         '''
         scrape_category_urls = self.scraper._scrape_category_urls()
-        list_of_ints = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+        list_of_ints = [str(i) for i in range(10)]
         for category, url in scrape_category_urls.items():
             self.assertNotEqual(category, '')
             self.assertIn(url[-1], list_of_ints)
@@ -296,6 +281,81 @@ class Product_ImagesTestCase(unittest.TestCase):
     @classmethod
     def tearDownClas(cls):
         del cls.driver
+
+unittest.main(argv=[''], verbosity=2, exit=False)
+
+# %%
+from OcadoRecipesScraper import OcadoRecipesScraper
+from selenium import webdriver
+import unittest
+import os
+
+class OcadoRecipesScraperTestCase(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.pwd = os.path.abspath(os.getcwd())
+
+    def setUp(self):
+        self.scraper = OcadoRecipesScraper()
+        self.key_list = ['URL', 'Name', 'Description', 'Price', 'Rating', 'Ingredients', 'Image URL', 'Time', 'Instructions', 'Serves']
+
+    def test_get_number_of_pages(self):
+        number_of_pages = self.scraper.get_number_of_pages(self.scraper.driver)
+        self.assertGreaterEqual(number_of_pages, 1)
+
+    def test_scrape_all_recipe_urls(self):
+        recipe_urls = self.scraper.scrape_all_recipe_urls(limit_pages=1)
+        self.assertGreaterEqual(len(recipe_urls), 1)
+        split_url_list = [url.split('/') for url in recipe_urls]
+        url_end_list = [url for lists in split_url_list for i, url in enumerate(lists) if i == 6]
+        for url_end in url_end_list:
+            self.assertIsInstance(int(url_end[1]), int)
+            self.assertEqual(url_end[::-1][0:10][::-1], 'Categories')
+
+    def test_scrape_recipe_urls_from_page(self):
+        page_urls = self.scraper.scrape_recipe_urls_from_page(self.scraper.driver)
+        self.assertGreaterEqual(len(page_urls), 1)
+        split_url_list = [url.split('/') for url in page_urls]
+        url_end_list = [url for lists in split_url_list for i, url in enumerate(lists) if i == 6]
+        for url_end in url_end_list:
+            self.assertIsInstance(int(url_end[1]), int)
+            self.assertEqual(url_end[::-1][0:10][::-1], 'Categories')
+    
+    def test_scrape_recipe_data(self):
+        url_for_testing = 'https://www.ocado.com/webshop/recipe/Tuna-Mayo-Sub-Club/202568?selectedCategories'
+        product_name = ' '.join(url_for_testing.split('/')[5].split('-'))
+        recipe_dict = self.scraper.scrape_recipe_data(self.scraper.driver, url_for_testing)
+        for dict in recipe_dict.values():
+            self.assertEqual(dict['Name'], product_name)
+            self.assertEqual(dict['URL'], url_for_testing)
+            for key in dict.keys():
+                self.assertIn(key, self.key_list)
+    
+    def test_scrape(self):
+        self.scraper.scrape(limit_pages=1)
+        recipe_data_path_bool = os.path.isfile(f'{self.pwd}/data/recipes_data')
+        self.assertTrue(recipe_data_path_bool)
+        recipe_urls_path_bool = os.path.isfile(f'{self.pwd}/data/recipes_urls')
+        self.assertTrue(recipe_urls_path_bool)
+    
+    def test_scrape_all_recipes(self):
+        self.scraper.scrape_all_recipe_urls(limit_pages=1)
+        all_recipes = self.scraper.scrape_all_recipes()
+        for dict in all_recipes:
+            for name, dicts_info in dict.items():
+                for description_title in dicts_info.keys():
+                    self.assertIn(description_title, self.key_list)
+                    self.assertIsInstance(dicts_info['Ingredients'], list)
+                    self.assertEqual(name, dicts_info['Name'])
+
+    def tearDown(self):
+        del self.scraper
+    
+    @classmethod
+    def tearDownClass(cls):
+        os.remove(f'{cls.pwd}/data/recipes_urls')
+        os.remove(f'{cls.pwd}/data/recipes_data')
 
 unittest.main(argv=[''], verbosity=2, exit=False)
 
