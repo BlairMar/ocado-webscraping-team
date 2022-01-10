@@ -24,7 +24,7 @@ class OcadoRecipesScraper:
         WebDriverWait(self.driver, 120).until(EC.element_to_be_clickable((By.XPATH,'//*[@id="onetrust-accept-btn-handler"]'))).click()
         self.number_of_pages = OcadoRecipesScraper.get_number_of_pages(self.driver)
         # self.driver.close()
-        self.data_path = './data/'
+        self.data_path = '../data/'
         self.recipes_urls_path = self.data_path + 'recipes_urls'
         self.recipes_data_path = self.data_path + 'recipes_data'
         self.recipes_urls = []
@@ -38,6 +38,7 @@ class OcadoRecipesScraper:
         Returns:
             int: number of pages available to scrape.
         """
+
         page_number_objects = driver.find_elements(By.XPATH, '//*[@class="paginationWrapper paginationBottom "]//li/a')
         return max([int(p_n_obj.text) for p_n_obj in page_number_objects if p_n_obj.text.isdigit()])
     

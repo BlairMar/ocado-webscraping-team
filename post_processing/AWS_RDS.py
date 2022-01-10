@@ -7,10 +7,11 @@ import pandas as pd
 
 #### For importing files in the repo
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir)
 
-from data_processing import Data_Processing
+from data_processing import DataProcessing
 from sqlalchemy import create_engine
 
 DATABASE_TYPE = 'postgresql'
@@ -25,7 +26,7 @@ class Export_to_AWS_RDS:
     def __init__(self, database_type=DATABASE_TYPE, dbapi=DBAPI, user=USER, port=PORT, endpoint=ENDPOINT, password=PASSWORD, database=DATABASE):
         self.engine = create_engine(f"{database_type}+{dbapi}://{user}:{password}@{endpoint}:{port}/{database}")
         self.engine.connect()
-        self.process_data = Data_Processing()
+        self.process_data = DataProcessing()
         
   ########################################################
   # Normalized data  
@@ -61,7 +62,7 @@ class Export_to_AWS_RDS:
 ###########################################################
 
     # Creates a separate table for each category including all the scraped information
-    # Note: the list entries are not transformed in these table and are still in list format
+    # Note: the list entries are not transformed in these tables and are still in list format
     def export_product_data_by_category(self):
         for category, df in self.process_data.get_dictionary_of_dataframes().items():      
             table_name = Export_to_AWS_RDS._reformat_string(category)   
@@ -81,6 +82,3 @@ export = Export_to_AWS_RDS()
 export.export_all_normalized_tables()
 # %%
 
-
-
-# %%

@@ -1,11 +1,10 @@
 # %%
-# # For importing files in the repo
-# current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-# parent_dir = os.path.dirname(current_dir)
-# sys.path.insert(0, parent_dir)
 
-# %%
 # This cell is the unit test for Product. OFFICIAL!
+
+#### For importing files in the repo
+import sys
+sys.path.insert(0, '..//ocado_scraper')
 
 from product import Product
 from selenium import webdriver
@@ -13,6 +12,7 @@ from selenium.webdriver.common.by import By
 import unittest
 from OcadoScraper import OcadoScraper
 import os
+
 
 class ProductTestCase(unittest.TestCase):
 
@@ -252,6 +252,7 @@ class OcadoScraperTestCase(unittest.TestCase):
 unittest.main(argv=[''], verbosity=2, exit=False)
 
 # %%
+
 from product import Product
 from selenium import webdriver
 from images import Product_Images
@@ -372,6 +373,7 @@ class OcadoRecipesScraperTestCase(unittest.TestCase):
         '''
         Testing scrape_all_recipes. Tests there are no missing items, the "Ingredients" value is a list and the "Name" value is correct.
         '''
+
         self.scraper.scrape_all_recipe_urls(limit_pages=1)
         all_recipes = self.scraper.scrape_all_recipes()
         for dict in all_recipes:
@@ -391,4 +393,3 @@ class OcadoRecipesScraperTestCase(unittest.TestCase):
 
 unittest.main(argv=[''], verbosity=2, exit=False)
 
-# %%

@@ -60,7 +60,7 @@ class Product:
         Params : 
                 attribute_name: name of the product attribute
                 xpath: xpath of the product attribute, eg xpath of the product name, price, description etc
-        Return: 
+        Return:
                 The web element or None if nothing found.
         """
         try:
