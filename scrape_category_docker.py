@@ -20,8 +20,6 @@ ocado.scrape_products([sys.argv[1]])
 # scrape all categories     
 # ocado.scrape_products()
 
-# scrape bakery category (for testing)
-# ocado.scrape_products(['Bakery'])
 
 
 # %%
