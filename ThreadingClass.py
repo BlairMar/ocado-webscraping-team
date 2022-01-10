@@ -1,10 +1,12 @@
 import threading
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime
 
 class CategoryPageThread(threading.Thread):
-    def __init__(self, threadID, url, number_of_scrolls, start_scrolling_at, stop_scrolling_at, func, headless=True):
+    def __init__(self, threadID, url, number_of_scrolls, start_scrolling_at, stop_scrolling_at, func, headless=True, limit=0):
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.url = url
@@ -13,6 +15,7 @@ class CategoryPageThread(threading.Thread):
         self.stop_scrolling_at = stop_scrolling_at
         self.func = func # OcadoScraper._scroll_to_get_product_urls()
         self.headless = headless
+        self.limit = limit
         self.chrome_options = webdriver.ChromeOptions()
         if self.headless:
             self.chrome_options.add_argument("--headless")
@@ -44,7 +47,7 @@ class CategoryPageThread(threading.Thread):
         between self.start_scrolling_at and self.stop scrolling_at fractions of the page length
         are collected in self.product_urls
         """
-        self.product_urls = self.func(self.driver, self.number_of_scrolls, self.start_scrolling_at, self.stop_scrolling_at)
+        self.product_urls = self.func(self.driver, self.number_of_scrolls, self.start_scrolling_at, self.stop_scrolling_at, limit=self.limit)
         self.active = False
 
 
@@ -98,3 +101,54 @@ class ScrapingProductsThread(threading.Thread):
                     print(f'Estimated time left for thread {self.threadID}: {time_passed*(l/i-1)}')
         print(f'Thread {self.threadID} is 100% done')
         self.active = False
+
+class RecipesPageThread(threading.Thread):
+    def __init__(self, threadID, url_list, func, headless=True):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.url_list = url_list
+        self.func = func
+        self.headless = headless
+        self.chrome_options = webdriver.ChromeOptions()
+        if self.headless:
+            self.chrome_options.add_argument("--headless")
+            self.chrome_options.add_argument('window-size=1920,1080')
+        self.driver = webdriver.Chrome(options=self.chrome_options)
+        if not self.headless:
+            self.driver.maximize_window()
+        self.driver.get('https://www.ocado.com/webshop/recipeSearch.do?categories=')
+        WebDriverWait(self.driver, 120).until(EC.element_to_be_clickable((By.XPATH,'//*[@id="onetrust-accept-btn-handler"]'))).click()
+        self.recipes_urls = []
+
+    def run(self):
+        for url in self.url_list:
+            self.driver.get(url)
+            self.recipes_urls.extend(self.func(self.driver))
+
+class ScrapeRecipesDataThread(threading.Thread):
+    def __init__(self, threadID, url_list, func, headless=True):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.url_list = url_list
+        self.func = func
+        self.headless = headless
+        self.chrome_options = webdriver.ChromeOptions()
+        if self.headless:
+            self.chrome_options.add_argument("--headless")
+            self.chrome_options.add_argument('window-size=1920,1080')
+        self.driver = webdriver.Chrome(options=self.chrome_options)
+        if not self.headless:
+            self.driver.maximize_window()
+        self.driver.get('https://www.ocado.com/webshop/recipeSearch.do?categories=')
+        WebDriverWait(self.driver, 120).until(EC.element_to_be_clickable((By.XPATH,'//*[@id="onetrust-accept-btn-handler"]'))).click()
+        self.recipes_data = []
+    
+    def run(self):
+        start = datetime.now()
+        for i, url in enumerate(self.url_list):
+            if i%20 == 0 and i != 0:
+                print(f"{100*i/len(self.url_list)}% done. Estimated time left: {(datetime.now()-start)*(len(self.url_list)/i-1)}")
+            self.recipes_data.append(self.func(self.driver, url))
+        self.driver.close()
+
+        
