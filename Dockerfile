@@ -22,4 +22,4 @@ RUN pip install requests
 
 ENV DISPLAY=:99
 
-ENTRYPOINT [ "python3", "scrape_category_docker.py"]s
+ENTRYPOINT [ "python3", "scrape_category_docker.py"]
