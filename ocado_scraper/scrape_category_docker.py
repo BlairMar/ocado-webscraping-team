@@ -20,6 +20,8 @@ ocado.scrape_products([sys.argv[1]])
 # scrape all categories     
 # ocado.scrape_products()
 
-
+###
+# docker volume create data-volume 
+# docker run --rm -v data-volume:/data 93ee1c6b830d "Bakery"
 
 # %%

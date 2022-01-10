@@ -33,7 +33,7 @@ class OcadoScraper:
         Access Ocado front page using chromedriver
         """
         self.ROOT = 'https://www.ocado.com/'
-        self.data_path = './data/'
+        self.data_path = '../data/'
         self.category_url_path = self.data_path + 'category_urls'
         self.product_data_path = self.data_path + 'product_data'
         self.chrome_options = webdriver.ChromeOptions()
@@ -78,7 +78,7 @@ class OcadoScraper:
             self._scrape_category_urls()
         else:
             try:
-                self.category_urls = OcadoScraper._read_data("./data/category_urls")
+                self.category_urls = OcadoScraper._read_data("../data/category_urls")
             except Exception as e:
                 print("Error: No stored data for category urls, re-run the scraper with scrape_categories=True")
                 return
@@ -268,7 +268,7 @@ class OcadoScraper:
     # Beware! - deletes the folder storing all the images.  
     @staticmethod                    
     def delete_downloaded_images():
-        path = './data/images/'
+        path = '../data/images/'
         try:
             shutil.rmtree(path)
         except OSError as e:
@@ -355,11 +355,5 @@ if __name__ == '__main__':
     # ocado = OcadoScraper() 
     # ocado.scrape_products()
 
-
-
-
-#%%
-# ocado = OcadoScraper()
-# ocado.categories_available_to_scrape()
 
 # %%
