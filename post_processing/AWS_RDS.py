@@ -76,7 +76,7 @@ export = Export_to_AWS_RDS()
 
 # Fill in your details below
 # Note: create server with endpoint details in pgAdmin and a database inside the server to view the tables 
-export = Export_to_AWS_RDS(endpoint='', password='', database='')
+# export = Export_to_AWS_RDS(endpoint='', password='', database='')
 #%%
 export.export_all_normalized_tables()
 # %%

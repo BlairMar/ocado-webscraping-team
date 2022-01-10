@@ -25,7 +25,6 @@ class DataProcessing:
     def _product_data_to_dataframes(self):
         for key, value in self.raw_product_data.items():
                 df_for_category = pd.DataFrame.from_records(value).transpose()
-                df_for_category.index.names = ['Sku']
                 category = [key] * len(value.items())  # adding a column for the category
                 DataProcessing._reformat_column_names(df_for_category)
                 df_for_category.index.names = ['sku']
@@ -80,6 +79,6 @@ class DataProcessing:
         return df.rename(columns={df.columns[0]: "categories" })
                 
 #%%    
-#process_data = DataProcessing()
+process_data = DataProcessing()
 
 # %%
