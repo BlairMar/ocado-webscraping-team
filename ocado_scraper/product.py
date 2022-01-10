@@ -20,6 +20,12 @@ class Product:
         self.image_list = Product_Images(self.sku)
         
     def _get_sku_from_url(self):
+        '''
+        This function gets the sky from a URL.
+        
+        Returns:
+            str: The sku from the URL.
+        '''
         return self.url.split("-")[-1] 
  
     @staticmethod
@@ -27,7 +33,7 @@ class Product:
         """
         Gets a dictionary containing the xpath for a product attribute.
 
-        return: 
+        Return: 
                 A dictionary of xpaths for each product attribute
 
         """
@@ -51,10 +57,10 @@ class Product:
         """
         Get a web element of the product attribute xpath.
 
-        params : 
+        Params : 
                 attribute_name: name of the product attribute
                 xpath: xpath of the product attribute, eg xpath of the product name, price, description etc
-        return: 
+        Return: 
                 The web element or None if nothing found.
         """
         try:
@@ -66,6 +72,13 @@ class Product:
 
     # scrape all the information and images of the product 
     def _get_product_information(self, key, attribute_web_element):
+        '''
+        This function scrapes all the information and images of the product
+        
+        Args:
+            key:
+            attribute_web_element:
+        '''
         if key in ['Name', 'Description', 'Price', 'Price per', 'Offers', 'Ingredients', 'Nutrition']:
             return attribute_web_element.text
         if key in ['Usage', 'Brand details']:
@@ -81,11 +94,15 @@ class Product:
                  
     @staticmethod
     def _scrape_hidden_information(web_elements):
+        '''
+        '''
         text_in_hidden_elements = [element.get_attribute('textContent') for element in web_elements]
         return (' '.join(str(text) for text in text_in_hidden_elements))     
     
     @staticmethod
     def _scrape_category_info(web_elements):
+        '''
+        '''
         return [element.get_attribute('textContent') for element in web_elements]
     
  ##############################################################################
@@ -93,10 +110,26 @@ class Product:
     
     # returns the sku (unique product ID) of a product
     def get_sku(self):
+        '''
+        This function returns the sku (unique product ID) of a product
+        
+        Returns:
+            str: A string of the sku (unique product ID)
+        '''
         return self.sku
     
     # returns a dictionary of product information eg {Name: , Price :  ,Description : , ...., Image links : ... }            
     def scrape_product_data(self, driver, download_images):
+        '''
+        This function returns a dictionary of product information eg {Name: , Price :  ,Description : , ...., Image links : ... }.
+
+        Args:
+            driver:
+            download_images: If False, does not download the images. If True, downloads the images.
+        
+        Returns:
+            Dictionary: The dictionary of product information.
+        '''
         driver.get(self.url)
         for key, value in Product._get_xpaths().items():
             attribute_web_element = self._get_web_element_by_xpath_or_none(driver, key, value)
@@ -110,6 +143,9 @@ class Product:
 
     # downloads all the product images. Note: The function above must be called first to get the image list
     def download_images(self):
+        '''
+        Downloads all the product images.
+        '''
         self.image_list.download_all_images()             
                 
 

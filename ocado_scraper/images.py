@@ -11,11 +11,24 @@ class Product_Images:
         
     @staticmethod
     def _create_folder(path):
+        '''
+        This function creates a file where the images will be dumped.
+
+        Args:
+            path: The path to the file.
+        '''
         if not os.path.exists(path):
             os.makedirs(path)
                 
     @staticmethod
     def _download_img(url, path):
+        '''
+        Downloads the image of a specfic image.
+        
+        Args:
+            url: The URL of the product for which the image is to be downloaded.
+            path: The path to the file where the image will be dumped.
+            '''
         img_data = requests.get(url).content
         with open(path, 'wb') as handler:
             handler.write(img_data)   
@@ -24,6 +37,8 @@ class Product_Images:
 # Public functions
             
     def scrape_images(self, web_elements):
+        '''
+        This function gets images'''
         image_set = set() # use a set as if we have more than one image the large image will be counted twice
         for image in web_elements:
             image_src = image.get_attribute('src')
@@ -35,6 +50,9 @@ class Product_Images:
         return self.image_src_list
         
     def download_all_images(self):
+        '''
+        This function downloads all the images
+        '''
         path = f'./data/images/{self.product_sku}'
         self._create_folder(path)
         for image_url in self.image_src_list:
