@@ -32,6 +32,13 @@ class OcadoRecipesScraper:
         
     @staticmethod
     def get_number_of_pages(driver):
+        """
+        Gets the number of pages available to scrape.
+
+        Returns:
+            int: number of pages available to scrape.
+        """
+
         page_number_objects = driver.find_elements(By.XPATH, '//*[@class="paginationWrapper paginationBottom "]//li/a')
         return max([int(p_n_obj.text) for p_n_obj in page_number_objects if p_n_obj.text.isdigit()])
     
@@ -43,6 +50,15 @@ class OcadoRecipesScraper:
         return divided_list
     
     def scrape_all_recipe_urls(self, threads_number=2, limit_pages=0):
+        """
+        This function scrapes all URLs of the products.
+        
+        Args: 
+            limit_pages: Allows user to choose how many pages to scrape.
+            threads_number:
+        Returns
+            list: URLs scraped.
+        """
         root = 'https://www.ocado.com/webshop/recipeSearch.do?categories=&recipeSearchIndex='
         list_of_urls = [root+str(i) for i in range(self.number_of_pages)]
         if limit_pages:
@@ -58,6 +74,14 @@ class OcadoRecipesScraper:
     
     @staticmethod
     def scrape_recipe_urls_from_page(driver):
+        '''
+        This function scrapes the product URLs of the products on the page for which the XPATH is given.
+        
+        Args:
+            driver: 
+        Returns:
+            list: A list of the product URLs.
+        '''
         recipe_urls_objcets = driver.find_elements(By.XPATH, '//*[@class="recipeListItem__link"]')
         return [web_object.get_attribute('href') for web_object in recipe_urls_objcets]
     
@@ -65,8 +89,9 @@ class OcadoRecipesScraper:
     def _get_xpaths():
         """
         Gets a dictionary containing the xpath for a recipe attribute.
-        return: 
-                A dictionary of xpaths for each recipe attribute
+        
+        Return: 
+            Dictionary: A dictionary of xpaths for each recipe attribute.
         """
         recipes_xpaths = { 'Name' : '//*[@itemprop="name"]',
                            'Description' : '//*[@itemprop="description"]',
@@ -111,6 +136,16 @@ class OcadoRecipesScraper:
     
     @staticmethod
     def scrape_recipe_data(driver, url):
+        '''
+        This function scrapes the recipe for a particular URL.
+        
+        Args:
+            driver:
+            url: The URL of the recipe to scrape.
+        
+        Returns:
+            Dictionary: A nested dictionary of the recipes URL, Name and Description.
+        '''
         driver.get(url)
         data = {'URL' : url}
         xpaths = OcadoRecipesScraper._get_xpaths()
@@ -138,15 +173,36 @@ class OcadoRecipesScraper:
     
     @staticmethod
     def _create_folder(path):
+        '''
+        This function will create a folder.
+        
+        Args:
+            path: The location where the user wants the folder.
+        '''
         if not os.path.exists(path):
             os.makedirs(path)
     
     def _save_data(self, filename, data, mode='w', indent=4):
+        '''
+        This functions saves the data in the files created when _create_folder is called.
+
+        Args:
+            filename: The name of the file to save the data to.
+            data: The data to be saved in the file.
+            mode: the mode in which the data will be saved.
+            indent:
+        '''
         OcadoRecipesScraper._create_folder(self.data_path)
         with open(self.data_path + f'{filename}', mode=mode) as f:
             json.dump(data, f, indent=indent) 
     
     def scrape(self, limit_pages=0):
+        '''
+        This function scrapes the recipes and urls and saves them into folders recipes_data and recipes_urls respectively.
+        
+        Args:
+            limit_pages: Allows the user to choose the number of pages to scrape.
+        '''
         self.scrape_all_recipe_urls(limit_pages=limit_pages)
         self._save_data('recipes_urls', self.recipes_urls)
         self.scrape_all_recipes()

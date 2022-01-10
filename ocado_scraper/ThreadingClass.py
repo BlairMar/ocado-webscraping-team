@@ -76,6 +76,7 @@ class ScrapingProductsThread(threading.Thread):
         if not self.headless:
             self.driver.maximize_window()
         CategoryPageThread._accept_cookies(self.driver)
+
         self.product_details = {}
         self.active = True
     

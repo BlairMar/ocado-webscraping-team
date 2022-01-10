@@ -3,6 +3,7 @@ import boto3
 import os
 import requests
 
+
 BUCKET_NAME = 'ocado-scraper-bucket'
 REGION_NAME = 'us-east-1'
 
@@ -38,6 +39,7 @@ class Data_Images_to_S3:
     def download_file_from_s3(self, file_key, name ):
         self.s3_client.download_file(self.bucket_name, file_key, name)
   
+
 #%%           
 s3 = Data_Images_to_S3()
 #%%
