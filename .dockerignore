@@ -1,0 +1,12 @@
+data/product_data
+data/category_urls
+data/product_urls
+post_processing/AWS_RDS.py
+post_processing/data_processing.py
+post_processing/s3.py
+.gitignore
+diagram.drawio
+diagram.jpg
+Ocado_info.txt
+product_urls_for_testing
+run_scraper.py

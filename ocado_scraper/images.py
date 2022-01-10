@@ -35,7 +35,7 @@ class Product_Images:
         return self.image_src_list
         
     def download_all_images(self):
-        path = f'./data/images/{self.product_sku}'
+        path = f'../data/images/{self.product_sku}'
         self._create_folder(path)
         for image_url in self.image_src_list:
             image_number = image_url.split("_")[1] # image number 0 is main picture

@@ -24,7 +24,7 @@ class OcadoRecipesScraper:
         WebDriverWait(self.driver, 120).until(EC.element_to_be_clickable((By.XPATH,'//*[@id="onetrust-accept-btn-handler"]'))).click()
         self.number_of_pages = OcadoRecipesScraper.get_number_of_pages(self.driver)
         # self.driver.close()
-        self.data_path = './data/'
+        self.data_path = '../data/'
         self.recipes_urls_path = self.data_path + 'recipes_urls'
         self.recipes_data_path = self.data_path + 'recipes_data'
         self.recipes_urls = []
