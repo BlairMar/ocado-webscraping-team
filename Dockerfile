@@ -22,6 +22,4 @@ RUN pip install requests
 
 ENV DISPLAY=:99
 
-# CMD ["python3", "scrape_category_docker.py"]
-# ENTRYPOINT [ "python3", "scrape_category_docker.py", "Bakery"]
-ENTRYPOINT [ "python3", "scrape_category_docker.py"]
+ENTRYPOINT [ "python3", "scrape_category_docker.py"]s
