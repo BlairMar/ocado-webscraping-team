@@ -14,11 +14,10 @@ from OcadoScraper import OcadoScraper
 ocado = OcadoScraper(True, True)
 
 # scrape all categories     
-ocado.scrape_products()
+# ocado.scrape_products()
 
 # scrape the category passed as an argument to docker run
-# ocado.scrape_products([sys.argv[1]])
-
+ocado.scrape_products([sys.argv[1]])
 
 
 ######## docker example commands ########
