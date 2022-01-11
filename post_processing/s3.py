@@ -1,4 +1,6 @@
 #%%
+#### Upload the raw data json and all saved images to AWS S3 bucket 
+
 import boto3 
 import os
 import requests

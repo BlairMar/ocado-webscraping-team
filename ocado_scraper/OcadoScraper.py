@@ -168,6 +168,8 @@ class OcadoScraper:
         if rewrite:
             self.product_data[category_name] = product_details
         else:
+            if category_name not in self.product_data:
+                self.product_data[category_name] = {}
             self.product_data[category_name].update(product_details)
         print(f"It took {datetime.now()-starting_time} seconds to scrape the products in the {category_name} category")
     
