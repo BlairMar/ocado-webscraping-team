@@ -119,7 +119,7 @@ class Product:
         return self.sku
     
     # returns a dictionary of product information eg {Name: , Price :  ,Description : , ...., Image links : ... }            
-    def scrape_product_data(self, driver, download_images):
+    def scrape_product_data(self, driver, download_images, data_path='../data/'):
         '''
         This function returns a dictionary of product information eg {Name: , Price :  ,Description : , ...., Image links : ... }.
 
@@ -138,15 +138,15 @@ class Product:
             else:
                 self.product_information[key] = False if key == 'Out of Stock' else None
         if download_images: 
-            self.download_images()
+            self.download_images(data_path)
         return self.product_information 
 
     # downloads all the product images. Note: The function above must be called first to get the image list
-    def download_images(self):
+    def download_images(self, data_path='../data/'):
         '''
         Downloads all the product images.
         '''
-        self.image_list.download_all_images()             
+        self.image_list.download_all_images(data_path)             
                 
 
 # %%
