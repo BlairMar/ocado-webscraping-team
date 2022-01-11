@@ -501,11 +501,4 @@ if __name__ == '__main__':
     # ocado.scrape_products()
 
 
-
-
-#%%
-# ocado = OcadoScraper()
-# ocado.categories_available_to_scrape()
-
-
 # %%
