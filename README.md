@@ -14,7 +14,7 @@ The way the scraper gathers information is as follows:
 
 Get the URLs of all the top levels categories (those found in ‘Browse’ on the homepage) on the ocado website and how many products there are in each category. 
 Iteratively for each category: 
-displays all products in the category and scrapes and saves all product urls in that category
+Displays all products in the category and scrapes and saves all product urls in that category
 Using the product urls found in the previous step, scrapes each product page for information and images.
 Saves the category data locally from the previous step to a nested dictionary (see Json structure below). Note image links are also saved and images downloaded locally if specified. 
 Uploads the raw data json and downloaded images to a data lake (AWS S3 bucket).
