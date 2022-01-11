@@ -5,8 +5,8 @@ post_processing/AWS_RDS.py
 post_processing/data_processing.py
 post_processing/s3.py
 .gitignore
-diagram.drawio
-diagram.jpg
-Ocado_info.txt
-product_urls_for_testing
-run_scraper.py
+docs/diagram.drawio
+docs/diagram.jpg
+docs/dictionary_structure.txt
+test/
+

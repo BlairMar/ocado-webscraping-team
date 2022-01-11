@@ -38,7 +38,7 @@ class Product_Images:
             
     def scrape_images(self, web_elements):
         '''
-        This function gets images'''
+        This function scrapes all image links for particular product and stores them in the image_src_list attribute '''
         image_set = set() # use a set as if we have more than one image the large image will be counted twice
         for image in web_elements:
             image_src = image.get_attribute('src')

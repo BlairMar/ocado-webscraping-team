@@ -1,4 +1,6 @@
 #%%
+#### Processes the raw data json using pandas to get 
+#### dataframes that can be exported directly to Postgres as normalized tables
 import sys
 import inspect
 import os

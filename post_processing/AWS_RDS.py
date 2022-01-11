@@ -1,5 +1,6 @@
 #%%
-### export all the dataframes to AWS RDS ###
+### Export all the dataframes to AWS RDS as normalized SQL tables ###
+
 import sys
 import inspect
 import os
@@ -7,7 +8,6 @@ import pandas as pd
 
 #### For importing files in the repo
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir)
 

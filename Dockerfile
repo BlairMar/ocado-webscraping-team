@@ -22,4 +22,4 @@ RUN pip install requests
 
 ENV DISPLAY=:99
 
-ENTRYPOINT [ "python3", "./ocado_scraper/scrape_category_docker.py"]
+ENTRYPOINT [ "python3", "./ocado_scraper/scrape_products_docker.py"]
