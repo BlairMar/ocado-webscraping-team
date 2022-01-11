@@ -7,6 +7,7 @@ import os
 import json
 import pandas as pd
 
+
 class DataProcessing:
     def __init__(self):
         self.product_data_path = self.data_path = '../data/product_data'
@@ -50,6 +51,11 @@ class DataProcessing:
         
 ######################################################################   
     #PUBLIC functions
+                 
+    # returns the dictionary of product_data  - export to S3 bucket
+    def get_raw_product_data(self):
+        return self.raw_product_data   
+
     
     # returns a dictionary of dataframes, one for each category
     def get_dictionary_of_dataframes(self):
@@ -81,6 +87,7 @@ class DataProcessing:
         return df.rename(columns={df.columns[0]: "categories" })
                 
 #%%    
+
 process_data = DataProcessing()
 
 # %%
