@@ -7,7 +7,6 @@ import os
 import json
 import pandas as pd
 
-
 class DataProcessing:
     def __init__(self):
         self.product_data_path = self.data_path = '../data/product_data'
@@ -19,6 +18,15 @@ class DataProcessing:
 
     @staticmethod
     def _read_data(path):
+        '''
+        Reads data from file.
+
+        Args:
+            path (str): path to the json file to be read
+
+        Returns:
+            Python object containing the data at path
+        '''
         with open(path) as f:
             data = f.read()
             return json.loads(data) 
@@ -26,6 +34,13 @@ class DataProcessing:
     # populates self.dictionary_of_category_dataframes which is a dictionary of dataframes, one for each category
     # drops any duplicates within the category in case there are any
     def _product_data_to_dataframes(self):
+        '''
+        Takes the data from raw_product_data and transforms it into pandas Dataframes.
+        The Dataframes are stored in dictionary_of_category_dataframes.
+
+        Returns:
+            dict: dictionary of dataframes containing the data in raw_product_data
+        '''
         for key, value in self.raw_product_data.items():
                 df_for_category = pd.DataFrame.from_records(value).transpose()
                 category = [key] * len(value.items())  # adding a column for the category
@@ -35,37 +50,68 @@ class DataProcessing:
                 self.dictionary_of_category_dataframes[key] = (df_for_category
                                 .reset_index()
                                 .drop_duplicates(subset=['sku'], keep='first')) 
-             
+        return self.dictionary_of_category_dataframes
+
     @staticmethod          
-    def _reformat_column_names(dataframe):        
+    def _reformat_column_names(dataframe):
+        '''
+        Removes blank spaces and replaces uppercase characters with lowercase characters 
+        in the columns names of a pandas dataframe.
+
+        Args:
+            DataFrame: pandas dataframe object
+
+        Returns:
+            DataFrame: pandas dataframe object with no blank spaces or uppercase characters in column names
+        '''
         dataframe.columns = dataframe.columns.str.lower()
         dataframe.columns = dataframe.columns.str.replace(' ','_')
+        return dataframe
                 
     # Populates the all_products_df dataframe attribute. 
     # This attribute is a concatenated dataframe where the last column will be different depending on the category the product was scraped in
     # Note this dataframe will have more than one row for a product if the product is in more than one scraping category
     def _all_products_df(self):
+        '''
+        Populates the all_products_df dataframe attribute. 
+        This attribute is a concatenated dataframe where the last column will be different depending on the category the product was scraped in
+        Note this dataframe will have more than one row for a product if the product is in more than one scraping category
+        Only call in the initialiser
+
+        Returns:
+            DataFrame: pandas dataframe with product data
+        '''
         temp_df = pd.concat(self.dictionary_of_category_dataframes.values(), ignore_index=True)
         DataProcessing._reformat_column_names(temp_df)
         self.all_products_df = temp_df
+        return self.all_products_df
         
 ######################################################################   
     #PUBLIC functions
                  
-    # returns the dictionary of product_data  - export to S3 bucket
     def get_raw_product_data(self):
+        '''
+        returns the dictionary of product_data  - export to S3 bucket
+        '''
         return self.raw_product_data   
 
     
-    # returns a dictionary of dataframes, one for each category
     def get_dictionary_of_dataframes(self):
+        '''
+        returns a dictionary of dataframes, one for each category
+        '''
         return self.dictionary_of_category_dataframes
     
-    # returns a dataframe for the specified category
     def get_dataframe_by_category(self, category_name):
+        '''
+        returns a dataframe for the specified category
+        '''
         return self.dictionary_of_category_dataframes[category_name]
     
     def get_number_of_unique_products(self):
+        '''
+        returns number of unique products
+        '''
         return len(self.get_df_all_product_data_excl_list_cols().index)
 
 ###################################################################    
@@ -87,7 +133,7 @@ class DataProcessing:
         return df.rename(columns={df.columns[0]: "categories" })
                 
 #%%    
-
 process_data = DataProcessing()
 
 # %%
+process_data.get_df_all_product_data_excl_list_cols()

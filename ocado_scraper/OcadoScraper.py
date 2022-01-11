@@ -29,13 +29,13 @@ from images import Product_Images
 
 ### Class Template:
 class OcadoScraper:
-    def __init__(self, scrape_categories=False, headless=True):
+    def __init__(self, scrape_categories=False, headless=True, data_path='../data/'):
         """
         Access Ocado front page using chromedriver
         """
         self.ROOT = 'https://www.ocado.com/'
 
-        self.data_path = '../data/'
+        self.data_path = data_path
         self.category_url_path = self.data_path + 'category_urls'
         self.product_data_path = self.data_path + 'product_data'
         self.chrome_options = webdriver.ChromeOptions()
@@ -186,12 +186,14 @@ class OcadoScraper:
         product_details = {}
         split_urls_lists = OcadoScraper._split_list(self.product_urls[category_name], threads_number)
         thread_list = [ScrapingProductsThread(i, split_urls_lists[i], \
-                OcadoScraper._scrape_product_data, download_images, headless=self.headless) for i in range(len(split_urls_lists))]
+                OcadoScraper._scrape_product_data, download_images, headless=self.headless, data_path=self.data_path) for i in range(len(split_urls_lists))]
 
         [thread.start() for thread in thread_list] #start scraping on each thread
         [thread.join() for thread in thread_list] #wait for threads to finish runnning
         for thread in thread_list: #bring the data together
             product_details.update(thread.product_details)
+        if category_name not in self.product_data:
+            self.product_data[category_name] = {}
         if rewrite:
             self.product_data[category_name] = product_details
         else:
@@ -201,7 +203,7 @@ class OcadoScraper:
         print(f"It took {datetime.now()-starting_time} seconds to scrape the products in the {category_name} category")
     
     @staticmethod
-    def _scrape_product_data(driver, url, download_images):
+    def _scrape_product_data(driver, url, download_images, data_path='../data/'):
         '''
         This function gets the data of a specified product.
 
@@ -213,7 +215,7 @@ class OcadoScraper:
             Dictionary: A dictionary of all the product information.
         '''
         product = Product(url)
-        return product.scrape_product_data(driver, download_images)
+        return product.scrape_product_data(driver, download_images, data_path=data_path)
     
     @staticmethod
     def _split_list(lst, n):
@@ -367,11 +369,11 @@ class OcadoScraper:
             
     # Beware! - deletes the folder storing all the images.  
     @staticmethod                    
-    def delete_downloaded_images():
+    def delete_downloaded_images(data_path='../data/'):
         '''
         This function deletes the folder storing all the images.
         '''
-        path = '../data/images/'
+        path = data_path + 'images/'
         try:
             shutil.rmtree(path)
         except OSError as e:
@@ -464,7 +466,7 @@ class OcadoScraper:
         '''
         self.driver.get(url)
         OcadoScraper._accept_cookies(self.driver)
-        return OcadoScraper._scrape_product_data(self.driver, url, download_images)
+        return OcadoScraper._scrape_product_data(self.driver, url, download_images, data_path=self.data_path)
     
     # Download all images for the specified LIST of categories using the stored image links in the json product data file. 
     def download_images(self, categories='ALL'):
@@ -486,7 +488,7 @@ class OcadoScraper:
                 for key, value in products[category].items():
                     image_src_list = products[category][key]['Image links']
                     image_list = Product_Images(key, image_src_list)
-                    image_list.download_all_images()
+                    image_list.download_all_images(data_path=self.data_path)
             else:
                 print(f'No stored data for {category} category')
 ####################################################################### 
@@ -509,3 +511,5 @@ if __name__ == '__main__':
 
 
 # %%
+ocado = OcadoScraper()
+# ocado.scrape_products(rewrite=True, limit=10)

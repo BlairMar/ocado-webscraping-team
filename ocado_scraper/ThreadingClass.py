@@ -62,10 +62,11 @@ class CategoryPageThread(threading.Thread):
 
 
 class ScrapingProductsThread(threading.Thread):
-    def __init__(self, threadID, url_list, func, download_images=False, headless=True):
+    def __init__(self, threadID, url_list, func, download_images=False, headless=True, data_path='../data/'):
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.url_list = url_list
+        self.data_path = data_path
         self.func = func # OcadoScraper._scrape_product_data()
         self.download_images = download_images
         self.headless = headless
@@ -101,7 +102,7 @@ class ScrapingProductsThread(threading.Thread):
         start = datetime.now()
         l = len(self.url_list)
         for i, url in enumerate(self.url_list):
-            self.product_details[url.split("-")[-1]] = self.func(self.driver, url, self.download_images)
+            self.product_details[url.split("-")[-1]] = self.func(self.driver, url, self.download_images, data_path=self.data_path)
             time_passed = datetime.now() - start
             if i%50 == 0:
                 print(f'Thread {self.threadID} is {int(i/l*100)}% done')

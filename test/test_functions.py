@@ -118,7 +118,7 @@ import os
 class OcadoScraperTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.scraper = OcadoScraper()
+        self.scraper = OcadoScraper(data_path='./data/')
         self.LIMIT = 5
         self.category_for_testing = 'Bakery'
         self.path_pwd = os.path.abspath(os.getcwd())
