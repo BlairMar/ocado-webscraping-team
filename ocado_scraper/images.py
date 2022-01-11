@@ -49,11 +49,11 @@ class Product_Images:
         self.image_src_list = list(image_set)
         return self.image_src_list
         
-    def download_all_images(self):
+    def download_all_images(self, data_path='../data/'):
         '''
         This function downloads all the images
         '''
-        path = f'../data/images/{self.product_sku}'
+        path = data_path + f'images/{self.product_sku}'
 
         self._create_folder(path)
         for image_url in self.image_src_list:
