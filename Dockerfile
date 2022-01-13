@@ -15,11 +15,10 @@ RUN wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`cu
 
 COPY . . 
 
-RUN pip install selenium 
-RUN pip install pandas 
-RUN pip install numpy
-RUN pip install requests
+RUN pip3 --no-cache-dir install --upgrade awscli
+
+RUN ["pip3", "install", "-r", "requirements.txt"]
 
 ENV DISPLAY=:99
 
-ENTRYPOINT [ "python3", "./ocado_scraper/scrape_products_docker.py"]
+ENTRYPOINT [ "python3", "./ocado_scraper/main_docker.py"]

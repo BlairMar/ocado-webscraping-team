@@ -73,12 +73,12 @@ class Export_to_AWS_RDS:
         return string.lower().replace(' ', '_').replace('&', '').replace(',', '').replace('__', '_')
                   
 #%%
-export = Export_to_AWS_RDS()
+# export = Export_to_AWS_RDS()
 
-# Fill in your details below
-# Note: create server with endpoint details in pgAdmin and a database inside the server to view the tables 
-# export = Export_to_AWS_RDS(endpoint='', password='', database='')
-#%%
-export.export_all_normalized_tables()
+# # Fill in your details below
+# # Note: create server with endpoint details in pgAdmin and a database inside the server to view the tables 
+# # export = Export_to_AWS_RDS(endpoint='', password='', database='')
+# #%%
+# export.export_all_normalized_tables()
 # %%
 

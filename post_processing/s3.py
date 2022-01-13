@@ -5,11 +5,10 @@ import boto3
 import os
 import requests
 
-
 BUCKET_NAME = 'ocado-scraper-bucket'
 REGION_NAME = 'us-east-1'
 
-class Data_Images_to_S3:
+class Data_and_Images_to_S3:
     def __init__(self, bucket_name=BUCKET_NAME, region_name=REGION_NAME):
         self.s3_client = boto3.client('s3', region_name)
         self.s3_resource = boto3.resource('s3',region_name)
@@ -43,12 +42,12 @@ class Data_Images_to_S3:
   
 
 #%%           
-s3 = Data_Images_to_S3()
-#%%
-s3.upload_product_data()
-s3.upload_images('../data/images')
-#%%
-s3.print_all_file_keys()
-s3.download_file_from_s3('91430011/0.jpg', 'image.jpg')
+# s3 = Data_and_Images_to_S3()
+# #%%
+# s3.upload_product_data()
+# s3.upload_images('../data/images')
+# #%%
+# s3.print_all_file_keys()
+# s3.download_file_from_s3('91430011/0.jpg', 'image.jpg')
 #%%
 

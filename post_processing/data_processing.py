@@ -132,8 +132,8 @@ class DataProcessing:
         df =  pd.DataFrame(self.get_df_of_sku_and_all_categories()['categories'].unique())
         return df.rename(columns={df.columns[0]: "categories" })
                 
-#%%    
-process_data = DataProcessing()
+# #%%    
+# process_data = DataProcessing()
 
-# %%
-process_data.get_df_all_product_data_excl_list_cols()
+# # %%
+# process_data.get_df_all_product_data_excl_list_cols()
