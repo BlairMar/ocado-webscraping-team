@@ -1,12 +1,5 @@
-data/product_data
-data/category_urls
-data/product_urls
-post_processing/AWS_RDS.py
-post_processing/data_processing.py
-post_processing/s3.py
+data/
 .gitignore
-docs/diagram.drawio
-docs/diagram.jpg
-docs/dictionary_structure.txt
+docs/
 test/
 

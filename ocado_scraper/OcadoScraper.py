@@ -502,7 +502,3 @@ if __name__ == '__main__':
     # ocado = OcadoScraper() 
     # ocado.scrape_products()
 
-
-# %%
-ocado = OcadoScraper()
-# ocado.scrape_products(rewrite=True, limit=10)
