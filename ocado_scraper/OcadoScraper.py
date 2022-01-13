@@ -572,9 +572,12 @@ class OcadoScraper:
             recipes: bool (if True also scrape all recipes on the website)
         '''
         self.scrape_products(categories="ALL", download_images=False, limit=0, threads_number=4, rewrite=False)
-        if recipes:
-            recipe_scraper = OcadoRecipesScraper()
-            recipe_scraper.scrape()
+        try:
+            if recipes:
+                recipe_scraper = OcadoRecipesScraper()
+                recipe_scraper.scrape()
+        except:
+            print("Recipies could not be scraped")
 
 
 #%%

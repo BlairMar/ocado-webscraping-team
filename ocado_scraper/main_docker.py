@@ -18,7 +18,7 @@ def main():
     # if len(sys.argv)>1: # If categories are specified as arguments to docker run scrape those categories otherwise scrape all categorie
     #     ocado.scrape_products(sys.argv[1:])
     # else:
-    ocado.scrape_products()
+    ocado.scrape(recipes=True)
        
     s3 = Data_and_Images_to_S3(bucket_name=os.getenv('BUCKET_NAME'), region_name=os.getenv('REGION_NAME'))
     s3.upload_product_data()
