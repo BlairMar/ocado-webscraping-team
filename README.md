@@ -17,15 +17,13 @@ There are several public functions to provide information:
 the categories and products available to scrape on the Ocado website.
 about the status of the scrape. 
 
-Example: 
-ocado = OcadoScraper(scrape_categories=True)
-ocado.categories_available_to_scrape()
-ocado.scrape_products(download_images=True) OR scrape a subset of categories eg
-ocado.scrape_products(['Bakery', 'Frozen Food'])
-
-ocado.current_status_info() 
-
-Scrape one product to view sample data collected and download it's images
+Example functions: 
+1.ocado = OcadoScraper(scrape_categories=True)
+2.ocado.categories_available_to_scrape()
+3.ocado.scrape_products(download_images=True) OR scrape a subset of categories eg
+4.ocado.scrape_products(['Bakery', 'Frozen Food'])
+5.ocado.current_status_info() 
+6. Scrape one product to view sample data collected and download it's images
 url='https://www.ocado.com/products/hovis-best-of-both-medium-sliced-226160'
 data = ocado.scrape_product(url, True)
 print(data)
