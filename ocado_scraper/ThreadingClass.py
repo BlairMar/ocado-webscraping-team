@@ -18,7 +18,7 @@ class CategoryPageThread(threading.Thread):
         self.limit = limit
         self.chrome_options = webdriver.ChromeOptions()
         if self.headless:
-            CategoryPageThread._set_headless_chrome_options(self.chrome_options)
+            CategoryPageThread.set_headless_chrome_options(self.chrome_options)
         self.driver = webdriver.Chrome(options=self.chrome_options)
         self.driver.get(self.url)
         if not self.headless:
@@ -27,7 +27,7 @@ class CategoryPageThread(threading.Thread):
         self.active = True
         
     @staticmethod
-    def _set_headless_chrome_options(chrome_options):
+    def set_headless_chrome_options(chrome_options):
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("window-size=1920,1080")
         chrome_options.add_argument("--no-sandbox") 
@@ -40,11 +40,12 @@ class CategoryPageThread(threading.Thread):
     @staticmethod
     def _accept_cookies(driver):
         """
-        Locate and Click Cookies Button
+        Wait for up 120 seconds to locate cookies button and click it if found.
         """
         try:
-            _accept_cookies = driver.find_element(By.XPATH, '//*[@id="onetrust-accept-btn-handler"]')
-            _accept_cookies.click()
+            WebDriverWait(driver, 120).until(EC.element_to_be_clickable((By.XPATH,'//*[@id="onetrust-accept-btn-handler"]'))).click()
+            # _accept_cookies = driver.find_element(By.XPATH, '//*[@id="onetrust-accept-btn-handler"]')
+            # _accept_cookies.click()
             print("Cookies button clicked")
         except:
             print("No Cookies buttons found on page")
@@ -72,7 +73,7 @@ class ScrapingProductsThread(threading.Thread):
         self.headless = headless
         self.chrome_options = webdriver.ChromeOptions()
         if self.headless:
-                CategoryPageThread._set_headless_chrome_options(self.chrome_options)
+                CategoryPageThread.set_headless_chrome_options(self.chrome_options)
         self.driver = webdriver.Chrome(options=self.chrome_options)
         if not self.headless:
             self.driver.maximize_window()
@@ -84,11 +85,12 @@ class ScrapingProductsThread(threading.Thread):
     @staticmethod
     def _accept_cookies(driver):
         """
-        Locate and Click Cookies Button
+        Wait for up 120 seconds to locate cookies button and click it if found.
         """
         try:
-            _accept_cookies = driver.find_element(By.XPATH, '//*[@id="onetrust-accept-btn-handler"]')
-            _accept_cookies.click()
+            WebDriverWait(driver, 120).until(EC.element_to_be_clickable((By.XPATH,'//*[@id="onetrust-accept-btn-handler"]'))).click()
+            # _accept_cookies = driver.find_element(By.XPATH, '//*[@id="onetrust-accept-btn-handler"]')
+            # _accept_cookies.click()
             print("Cookies button clicked")
         except:
             print("No Cookies buttons found on page")
@@ -120,8 +122,7 @@ class RecipesPageThread(threading.Thread):
         self.headless = headless
         self.chrome_options = webdriver.ChromeOptions()
         if self.headless:
-            self.chrome_options.add_argument("--headless")
-            self.chrome_options.add_argument('window-size=1920,1080')
+            CategoryPageThread.set_headless_chrome_options(self.chrome_options)
         self.driver = webdriver.Chrome(options=self.chrome_options)
         if not self.headless:
             self.driver.maximize_window()
@@ -143,8 +144,7 @@ class ScrapeRecipesDataThread(threading.Thread):
         self.headless = headless
         self.chrome_options = webdriver.ChromeOptions()
         if self.headless:
-            self.chrome_options.add_argument("--headless")
-            self.chrome_options.add_argument('window-size=1920,1080')
+            CategoryPageThread.set_headless_chrome_options(self.chrome_options)
         self.driver = webdriver.Chrome(options=self.chrome_options)
         if not self.headless:
             self.driver.maximize_window()
