@@ -12,7 +12,6 @@ sys.path.insert(0, parent_dir)
 from OcadoScraper import OcadoScraper
 from AWS_RDS import Export_to_AWS_RDS
 from s3 import Data_and_Images_to_S3
-from dotenv import load_dotenv
         
 def main():
     ocado = OcadoScraper(scrape_categories=True, headless=True) 
