@@ -28,7 +28,7 @@ Example usage:
 
 Information functions:
 Public function to get information about the data scraped before, during and after the scrape
-	•	Show status information about the scrape - eg which categories have been scraped already and number of products scraped, also which categories are left to scrape etc : ocado.current_status_info()
+	•	Show status information about the scrape - eg which categories have been scraped already and number of products scraped, also which categories are left to scrape etc : ```ocado.current_status_info()```
 	•	Scrape one product to view sample data collected and download it's images
 		```url='https://www.ocado.com/products/hovis-best-of-both-medium-sliced-226160'
 		   data = ocado.scrape_product(url, True)
