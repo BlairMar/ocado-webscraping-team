@@ -18,7 +18,7 @@ class CategoryPageThread(threading.Thread):
         self.limit = limit
         self.chrome_options = webdriver.ChromeOptions()
         if self.headless:
-            CategoryPageThread._set_headless_chrome_options(self.chrome_options)
+            CategoryPageThread.set_headless_chrome_options(self.chrome_options)
         self.driver = webdriver.Chrome(options=self.chrome_options)
         self.driver.get(self.url)
         if not self.headless:
@@ -27,7 +27,7 @@ class CategoryPageThread(threading.Thread):
         self.active = True
         
     @staticmethod
-    def _set_headless_chrome_options(chrome_options):
+    def set_headless_chrome_options(chrome_options):
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("window-size=1920,1080")
         chrome_options.add_argument("--no-sandbox") 
@@ -73,7 +73,7 @@ class ScrapingProductsThread(threading.Thread):
         self.headless = headless
         self.chrome_options = webdriver.ChromeOptions()
         if self.headless:
-                CategoryPageThread._set_headless_chrome_options(self.chrome_options)
+                CategoryPageThread.set_headless_chrome_options(self.chrome_options)
         self.driver = webdriver.Chrome(options=self.chrome_options)
         if not self.headless:
             self.driver.maximize_window()
@@ -122,8 +122,7 @@ class RecipesPageThread(threading.Thread):
         self.headless = headless
         self.chrome_options = webdriver.ChromeOptions()
         if self.headless:
-            self.chrome_options.add_argument("--headless")
-            self.chrome_options.add_argument('window-size=1920,1080')
+            CategoryPageThread.set_headless_chrome_options(self.chrome_options)
         self.driver = webdriver.Chrome(options=self.chrome_options)
         if not self.headless:
             self.driver.maximize_window()
@@ -145,8 +144,7 @@ class ScrapeRecipesDataThread(threading.Thread):
         self.headless = headless
         self.chrome_options = webdriver.ChromeOptions()
         if self.headless:
-            self.chrome_options.add_argument("--headless")
-            self.chrome_options.add_argument('window-size=1920,1080')
+            CategoryPageThread.set_headless_chrome_options(self.chrome_options)
         self.driver = webdriver.Chrome(options=self.chrome_options)
         if not self.headless:
             self.driver.maximize_window()

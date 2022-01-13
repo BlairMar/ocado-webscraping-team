@@ -170,7 +170,7 @@ class OcadoRecipesScraper:
         Args:
             threads_number: int (number of threads to run the scraper on)
         Returns:
-            dict: dictionary containing the recipes' data
+            list: dictionary containing the recipes' data
         
         """
         split_urls_list = OcadoRecipesScraper._split_list(self.recipes_urls, threads_number)
@@ -241,11 +241,14 @@ class OcadoRecipesScraper:
 
         Args:
             limit_pages: int (0 to scrape everything, n to scrape first n pages)
+        Returns:
+            list: recipes data
         '''
         self.scrape_all_recipe_urls(limit_pages=limit_pages)
         self._save_data('recipes_urls', self.recipes_urls)
         self.scrape_all_recipes()
         self._save_data('recipes_data', self.recipes_data)
+        return self.recipes_data
 
 #%%
 if __name__ == '__main__':
