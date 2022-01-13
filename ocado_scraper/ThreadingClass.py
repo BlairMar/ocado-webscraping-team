@@ -40,7 +40,7 @@ class CategoryPageThread(threading.Thread):
     @staticmethod
     def _accept_cookies(driver):
         """
-        Locate and Click Cookies Button
+        Wait for up 120 seconds to locate cookies button and click it if found.
         """
         try:
             WebDriverWait(driver, 120).until(EC.element_to_be_clickable((By.XPATH,'//*[@id="onetrust-accept-btn-handler"]'))).click()
@@ -85,7 +85,7 @@ class ScrapingProductsThread(threading.Thread):
     @staticmethod
     def _accept_cookies(driver):
         """
-        Locate and Click Cookies Button
+        Wait for up 120 seconds to locate cookies button and click it if found.
         """
         try:
             WebDriverWait(driver, 120).until(EC.element_to_be_clickable((By.XPATH,'//*[@id="onetrust-accept-btn-handler"]'))).click()

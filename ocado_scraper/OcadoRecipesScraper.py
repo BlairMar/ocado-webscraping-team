@@ -68,14 +68,14 @@ class OcadoRecipesScraper:
     
     def scrape_all_recipe_urls(self, threads_number=2, limit_pages=0):
         """
-        Scrape recipe URL's from all the recipe pages if limit_pages=0.
-        Otherwise it will scrape all the recipe URL's from the first #limit_pages pages.
+        Scrape recipe URLs from all the recipe pages if limit_pages=0.
+        Otherwise it will scrape all the recipe URLs from the first #limit_pages pages.
         
         Args: 
-            limit_pages: int (0 to scrape all the URL's, n to scrape the URL's from the first n pages)
+            limit_pages: int (0 to scrape all the URLs, n to scrape the URL's from the first n pages)
             threads_number: int (number of threads to run the URL scraper on)
         Returns
-            list: list of recipe URL's.
+            list: list of recipe URLs.
         """
         root = 'https://www.ocado.com/webshop/recipeSearch.do?categories=&recipeSearchIndex='
         list_of_urls = [root+str(i) for i in range(self.number_of_pages)]
@@ -93,13 +93,13 @@ class OcadoRecipesScraper:
     @staticmethod
     def _scrape_recipe_urls_from_page(driver):
         '''
-        Scrape the recipe URL's from a page with a list of recipes.
-        This function is meant to be passed as an argument when initialising RecipesPageThread objects.
+        Scrape the recipe URLs from a page with a list of recipes.
+        Meant to be passed as an argument when initialising RecipesPageThread objects.
         
         Args:
             driver: selenium.webdriver.chrome.webdriver.WebDriver
         Returns:
-            list: list of recipe URL's
+            list: list of recipe URLs
         '''
         recipe_urls_objcets = driver.find_elements(By.XPATH, '//*[@class="recipeListItem__link"]')
         return [web_object.get_attribute('href') for web_object in recipe_urls_objcets]
@@ -165,7 +165,7 @@ class OcadoRecipesScraper:
     
     def scrape_all_recipes(self, threads_number=4):
         """
-        Scrape all the recipes whose URL's are stored in recipes_urls.
+        Scrape all the recipes whose URLs are stored in recipes_urls.
 
         Args:
             threads_number: int (number of threads to run the scraper on)
@@ -185,7 +185,7 @@ class OcadoRecipesScraper:
     def _scrape_recipe_data(driver, url):
         '''
         Scrape a recipe's data given a webdriver and the recipe's URL.
-        This function is meant to be passed as an argument when initialising ScrapeRecipesDataThread objects.
+        Meant to be passed as an argument when initialising ScrapeRecipesDataThread objects.
 
         Args:
             driver: selenium.webdriver.chrome.webdriver.WebDriver
@@ -236,7 +236,7 @@ class OcadoRecipesScraper:
     
     def scrape(self, limit_pages=0):
         '''
-        Scrape all recipes URL's and data if limit_pages=0. Otherwise scrape only first #limit_pages recipe pages.
+        Scrape all recipes URLs and data if limit_pages=0. Otherwise scrape only first #limit_pages recipe pages.
         Store data in recipes_urls and recipes_data files.
 
         Args:
