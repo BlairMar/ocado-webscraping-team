@@ -12,10 +12,10 @@ class Product_Images:
     @staticmethod
     def _create_folder(path):
         '''
-        This function creates a file where the images will be dumped.
-
+        Create a folder at path if the folder doesn't already exist.
+        
         Args:
-            path: The path to the file.
+            path: str (the location where the user wants the folder)
         '''
         if not os.path.exists(path):
             os.makedirs(path)
@@ -23,12 +23,12 @@ class Product_Images:
     @staticmethod
     def _download_img(url, path):
         '''
-        Downloads the image of a specfic image.
+        Download image from URL to path.
         
         Args:
-            url: The URL of the product for which the image is to be downloaded.
-            path: The path to the file where the image will be dumped.
-            '''
+            url: str (URL of the product for which the image is to be downloaded)
+            path: str (path to the file where the image will be saved)
+        '''
         img_data = requests.get(url).content
         with open(path, 'wb') as handler:
             handler.write(img_data)   
@@ -38,7 +38,14 @@ class Product_Images:
             
     def scrape_images(self, web_elements):
         '''
-        This function scrapes all image links for particular product and stores them in the image_src_list attribute '''
+        Scrape all image URLs from a list of web elements.
+        Store URLs in image_src_list.
+
+        Args:
+            web_elements: list of selenium.webdriver.remote.webelement.WebElement
+        Returns:
+            list: list of image URLs
+        '''
         image_set = set() # use a set as if we have more than one image the large image will be counted twice
         for image in web_elements:
             image_src = image.get_attribute('src')
@@ -51,7 +58,12 @@ class Product_Images:
         
     def download_all_images(self, data_path='../data/'):
         '''
-        This function downloads all the images
+        Downloads all the images whose URLs are in image_src_list.
+
+        Args:
+            data_path: str (path to data folder)
+        Returns:
+            str: path to where the images have been saved
         '''
         path = data_path + f'images/{self.product_sku}'
 
@@ -60,5 +72,4 @@ class Product_Images:
             image_number = image_url.split("_")[1] # image number 0 is main picture
             self._download_img(image_url, path + f'/{image_number}.jpg')
         return path
-         
-# %%
+
