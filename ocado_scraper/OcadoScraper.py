@@ -11,6 +11,7 @@ import shutil
 from pprint import pprint
 from ThreadingClass import CategoryPageThread
 from ThreadingClass import ScrapingProductsThread
+from OcadoRecipesScraper import OcadoRecipesScraper
 import inspect
 import sys
 from datetime import datetime
@@ -29,12 +30,8 @@ from images import Product_Images
 
 ### Class Template:
 class OcadoScraper:
-    def __init__(self, scrape_categories=False, headless=True, data_path='../data/'):
-        """
-        Access Ocado front page using chromedriver
-        """
+    def __init__(self, scrape_categories=True, headless=True, data_path='../data/'):
         self.ROOT = 'https://www.ocado.com/'
-
         self.data_path = data_path
         self.category_url_path = self.data_path + 'category_urls'
         self.product_data_path = self.data_path + 'product_data'
@@ -491,14 +488,15 @@ class OcadoScraper:
                     image_list.download_all_images(data_path=self.data_path)
             else:
                 print(f'No stored data for {category} category')
-####################################################################### 
-# Other functions 
-    def zoom_page(self, zoom_percentage=100):
-        self.driver.execute_script(f"document.body.style.zoom='{zoom_percentage}%'")
-#######################################################################
+    
+    def scrape(self, categories="ALL", download_images=False, limit=0, threads_number=4, rewrite=False, recipes=False):
+        self.scrape_products(categories="ALL", download_images=False, limit=0, threads_number=4, rewrite=False)
+        if recipes:
+            recipe_scraper = OcadoRecipesScraper()
+            recipe_scraper.scrape()
 
+
+#%%
 if __name__ == '__main__':
-    pass
-    # ocado = OcadoScraper() 
-    # ocado.scrape_products()
-
+    ocado = OcadoScraper()
+    ocado.scrape_products(categories=["Bakery"], limit=200)

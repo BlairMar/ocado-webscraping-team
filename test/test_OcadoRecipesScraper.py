@@ -14,21 +14,20 @@ class OcadoRecipesScraperTestCase(unittest.TestCase):
         cls.pwd = os.path.abspath(os.getcwd())
 
     def setUp(self):
-        self.scraper = OcadoRecipesScraper()
+        self.scraper = OcadoRecipesScraper(data_path='./data/')
         self.key_list = ['URL', 'Name', 'Description', 'Price', 'Rating', 'Ingredients', 'Image URL', 'Time', 'Instructions', 'Serves']
 
-    def test_get_number_of_pages(self):
+    def test_scrape_number_of_pages(self):
         '''
-        Testing get_number_of_pages. Tests there are more than one page.
+        Testing _scrape_number_of_pages. Tests there are at least 2 pages.
         '''
-        number_of_pages = self.scraper.get_number_of_pages(self.scraper.driver)
-        self.assertGreaterEqual(number_of_pages, 1)
+        self.assertGreaterEqual(self.scraper.number_of_pages, 2)
 
     def test_scrape_all_recipe_urls(self):
         '''
         Testing scrape_all_recipe_urls. Tests the URLs end in an integer and the word "Categories" is in them, thus ensuring they are in fact URLs.
         '''
-        recipe_urls = self.scraper.scrape_all_recipe_urls(limit_pages=1)
+        recipe_urls = self.scraper.scrape_all_recipe_urls(limit_pages=2)
         self.assertGreaterEqual(len(recipe_urls), 1)
         split_url_list = [url.split('/') for url in recipe_urls]
         url_end_list = [url for lists in split_url_list for i, url in enumerate(lists) if i == 6]
@@ -38,9 +37,9 @@ class OcadoRecipesScraperTestCase(unittest.TestCase):
 
     def test_scrape_recipe_urls_from_page(self):
         '''
-        Testing scrape_recipe_urls_from_page. Tests the URLs end in an integer and the word "Categories" is in them, thus ensuring they are in fact URLs.
+        Testing _scrape_recipe_urls_from_page. Tests the URLs end in an integer and the word "Categories" is in them, thus ensuring they are in fact URLs.
         '''
-        page_urls = self.scraper.scrape_recipe_urls_from_page(self.scraper.driver)
+        page_urls = self.scraper._scrape_recipe_urls_from_page(self.scraper.driver)
         self.assertGreaterEqual(len(page_urls), 1)
         split_url_list = [url.split('/') for url in page_urls]
         url_end_list = [url for lists in split_url_list for i, url in enumerate(lists) if i == 6]
@@ -50,11 +49,11 @@ class OcadoRecipesScraperTestCase(unittest.TestCase):
     
     def test_scrape_recipe_data(self):
         '''
-        Testing scrape_recipe_data. Tests the dictionary has the correct keys and there are no missing keys.
+        Testing _scrape_recipe_data. Tests the dictionary has the correct keys and there are no missing keys.
         '''
         url_for_testing = 'https://www.ocado.com/webshop/recipe/Tuna-Mayo-Sub-Club/202568?selectedCategories'
         product_name = ' '.join(url_for_testing.split('/')[5].split('-'))
-        recipe_dict = self.scraper.scrape_recipe_data(self.scraper.driver, url_for_testing)
+        recipe_dict = self.scraper._scrape_recipe_data(self.scraper.driver, url_for_testing)
         for dict in recipe_dict.values():
             self.assertEqual(dict['Name'], product_name)
             self.assertEqual(dict['URL'], url_for_testing)
@@ -86,6 +85,7 @@ class OcadoRecipesScraperTestCase(unittest.TestCase):
                     self.assertEqual(name, dicts_info['Name'])
 
     def tearDown(self):
+        self.scraper.driver.close()
         del self.scraper
     
     @classmethod
