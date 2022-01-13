@@ -6,7 +6,7 @@ We built this commercial scraper to scrape all product and recipe data from Ocad
 
 For each product, we obtained almost all the information contained within the product page. For example price, description, ratings, images and whether the product was out of stock. 
 
-Installation/Running the scraper
+Installation/Running the scraper options:
 
 
 1) Run ocado_scraper/main.py to scrape all products and get status information, then upload raw data and images to an S3 bucket, process the raw data in pandas and upload tables to AWS RDS. Configure environment variables in .env file. 
