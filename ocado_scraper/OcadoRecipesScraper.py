@@ -107,9 +107,9 @@ class OcadoRecipesScraper:
     @staticmethod
     def _get_xpaths():
         """
-        Gets a dictionary containing the xpaths for recipe attributes.
+        Get a dictionary containing the xpaths for recipe attributes.
         
-        Return: 
+        Returns: 
             dict: A dictionary of xpaths for each recipe attribute.
         """
         recipes_xpaths = { 'Name' : '//*[@itemprop="name"]',
