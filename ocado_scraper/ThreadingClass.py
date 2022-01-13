@@ -43,8 +43,9 @@ class CategoryPageThread(threading.Thread):
         Locate and Click Cookies Button
         """
         try:
-            _accept_cookies = driver.find_element(By.XPATH, '//*[@id="onetrust-accept-btn-handler"]')
-            _accept_cookies.click()
+            WebDriverWait(driver, 120).until(EC.element_to_be_clickable((By.XPATH,'//*[@id="onetrust-accept-btn-handler"]'))).click()
+            # _accept_cookies = driver.find_element(By.XPATH, '//*[@id="onetrust-accept-btn-handler"]')
+            # _accept_cookies.click()
             print("Cookies button clicked")
         except:
             print("No Cookies buttons found on page")
@@ -87,8 +88,9 @@ class ScrapingProductsThread(threading.Thread):
         Locate and Click Cookies Button
         """
         try:
-            _accept_cookies = driver.find_element(By.XPATH, '//*[@id="onetrust-accept-btn-handler"]')
-            _accept_cookies.click()
+            WebDriverWait(driver, 120).until(EC.element_to_be_clickable((By.XPATH,'//*[@id="onetrust-accept-btn-handler"]'))).click()
+            # _accept_cookies = driver.find_element(By.XPATH, '//*[@id="onetrust-accept-btn-handler"]')
+            # _accept_cookies.click()
             print("Cookies button clicked")
         except:
             print("No Cookies buttons found on page")

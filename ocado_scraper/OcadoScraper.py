@@ -3,6 +3,8 @@
 from types import DynamicClassAttribute
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import requests
 import time
 import json
@@ -59,11 +61,12 @@ class OcadoScraper:
     @staticmethod
     def _accept_cookies(driver):
         """
-        Locate and Click Cookies Button
+        Locate and click Cookies Button
         """
         try:
-            _accept_cookies = driver.find_element(By.XPATH, '//*[@id="onetrust-accept-btn-handler"]')
-            _accept_cookies.click()
+            WebDriverWait(driver, 120).until(EC.element_to_be_clickable((By.XPATH,'//*[@id="onetrust-accept-btn-handler"]'))).click()
+            # _accept_cookies = driver.find_element(By.XPATH, '//*[@id="onetrust-accept-btn-handler"]')
+            # _accept_cookies.click()
             print("Cookies button clicked")
         except:
             print("No Cookies buttons found on page")
