@@ -18,7 +18,7 @@ def main():
     load_dotenv()
     ocado = OcadoScraper(scrape_categories=True, headless=True) 
     print(ocado.current_status_info())
-    if len(sys.argv)>1: # If categories are specified as arguments to docker run scrape those categories otherwise scrape all categorie
+    if len(sys.argv)>1: # If categories are specified as arguments to docker run scrape those categories otherwise scrape all categories
          ocado.scrape(sys.argv[1:])
     else:
         ocado.scrape(recipes=True)

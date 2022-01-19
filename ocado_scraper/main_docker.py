@@ -15,8 +15,8 @@ from s3 import Data_and_Images_to_S3
         
 def main():
     ocado = OcadoScraper(scrape_categories=True, headless=True) 
-    # if len(sys.argv)>1: # If categories are specified as arguments to docker run scrape those categories otherwise scrape all categorie
-    #     ocado.scrape_products(sys.argv[1:])
+    # if len(sys.argv)>1: # If categories are specified as arguments to docker run scrape those categories otherwise scrape all categories
+    #     ocado.scrape_products(sys.argv[1:]) # this approach doesn't work when using docker compose
     # else:
     ocado.scrape(recipes=True)
        
