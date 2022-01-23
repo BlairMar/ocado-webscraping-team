@@ -10,11 +10,14 @@ import pandas as pd
 class DataProcessing:
     def __init__(self):
         self.product_data_path = self.data_path = '../data/product_data'
+        self.recipes_data_path = '../data/recipes_data'
         self.raw_product_data = DataProcessing._read_data(self.product_data_path)
+        self.raw_recipes_data = DataProcessing._read_data(self.recipes_data_path)
         self.dictionary_of_category_dataframes = {}
         self._product_data_to_dataframes() # populate dictionary_of_category_dataframes
         self.all_products_df = pd.DataFrame()
-        self._all_products_df() # populate dataframe _all_products_df 
+        self._all_products_df() # populate dataframe _all_products_df
+        self.all_recipes_df = self.get_df_of_all_recipes()
 
     @staticmethod
     def _read_data(path):
@@ -131,7 +134,10 @@ class DataProcessing:
     def get_df_of_all_categories(self):
         df =  pd.DataFrame(self.get_df_of_sku_and_all_categories()['categories'].unique())
         return df.rename(columns={df.columns[0]: "categories" })
-                
+    
+    def get_df_of_all_recipes(self):
+        recipe_list = [list(a.values())[0] for a in dp.raw_recipes_data]
+        return pd.DataFrame(recipe_list)
 # #%%    
 # process_data = DataProcessing()
 
