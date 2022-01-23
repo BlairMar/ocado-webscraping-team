@@ -26,7 +26,9 @@ def main():
        
     s3 = Data_and_Images_to_S3(bucket_name=os.getenv('BUCKET_NAME'), region_name=os.getenv('REGION_NAME'))
     s3.upload_product_data()
+    s3.upload_recipe_data()
     s3.upload_images('../data/images')
+    
     
     export = Export_to_AWS_RDS(endpoint=os.getenv('ENDPOINT'), password=os.getenv('PASSWORD'), database=os.getenv('DATABASE'))
     export.export_all_normalized_tables()

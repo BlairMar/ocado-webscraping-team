@@ -15,10 +15,15 @@ class Data_and_Images_to_S3:
         self.bucket_name = bucket_name
         
     def upload_product_data(self):
-        path = '../data/product_data'
-        name = 'product_data.json'
-        self._upload_data_to_s3(path, name)
+        product_path = '../data/product_data'
+        product_name = 'product_data.json'
+        self._upload_data_to_s3(product_path, product_name)
     
+    def upload_recipe_data(self):
+        recipe_path = '../data/recipes_data'
+        recipe_name = 'recipes_data'
+        self._upload_data_to_s3(recipe_path, recipe_name)
+        
     def _upload_data_to_s3(self, path, name):
         self.s3_client.upload_file(path, self.bucket_name, name)
 

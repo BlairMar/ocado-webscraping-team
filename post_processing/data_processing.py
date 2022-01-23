@@ -136,8 +136,9 @@ class DataProcessing:
         return df.rename(columns={df.columns[0]: "categories" })
     
     def get_df_of_all_recipes(self):
-        recipe_list = [list(a.values())[0] for a in dp.raw_recipes_data]
+        recipe_list = [list(a.values())[0] for a in self.raw_recipes_data]
         return pd.DataFrame(recipe_list)
+
 # #%%    
 # process_data = DataProcessing()
 
