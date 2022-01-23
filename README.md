@@ -46,10 +46,13 @@ Public function to get information about the data scraped before, during and aft
 	•	```delete_saved_product_data_for_category(“Bakery”):```
 	•	```delete_downloaded_images()```
 
+3) An UML diagram of the classes and methods used to scrape the data can be found at /docs/diagram.jpg
 
-3) Package available on PYPI:  <insert link>
+4) Testing files for each class used for scraping can be found at /test/
 
-4) Image available on Docker hub: <insert link
+5) Package available on PYPI:  <insert link>
+
+6) Image available on Docker hub: <insert link
 
 
 
