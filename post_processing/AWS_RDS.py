@@ -34,7 +34,11 @@ class Export_to_AWS_RDS:
     # Creates a table 'all_products_information' in SQL of all products on the ocado website and all information that was not scraped in list form
     def export_all_products_information(self):
         self.process_data.get_df_all_product_data_excl_list_cols().to_sql('all_products_information', self.engine, if_exists='replace', index=False)   
-        
+    
+    # Creates a table 'all_recipes_information' in SQL of all recipes on the ocado website
+    def export_all_recipes_information(self):
+        self.process_data.get_df_of_all_recipes().to_sql('all_recipes_information', self.engine, if_exists='replace', index=False)
+    
     # Creates a table 'product_images' where the list of image links for each product are extracted into a separate table to satisfy the first normal form
     def export_product_images(self):
        self.process_data.get_df_of_sku_and_product_images().to_sql('product_images', self.engine, if_exists='replace', index=False)
@@ -54,6 +58,7 @@ class Export_to_AWS_RDS:
     # Just calls the 5 functions above to get all the tables
     def export_all_normalized_tables(self):
         self.export_all_products_information()
+        self.export_all_recipes_information()
         self.export_product_images()
         self.export_product_scraping_categories()
         self.export_product_all_categories()

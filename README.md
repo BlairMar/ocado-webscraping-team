@@ -2,9 +2,10 @@
 
 Ocado Web Scraper
 
-We built this commercial scraper to scrape all product and recipe data from Ocado.com, an online supermarket. The website holds thousands of products and hundreds of recipes and we scraped all of this data (+75K product pages).
+We built this commercial scraper to scrape all product and recipe data from Ocado.com, an online supermarket. The website holds thousands of products and thousands of recipes and we scraped all of this data (+75K product pages and +2k recipe pages).
 
-For each product, we obtained almost all the information contained within the product page. For example price, description, ratings, images and whether the product was out of stock. 
+For each product, we obtained almost all the information contained within the product page. For example price, description, ratings, images and whether the product was out of stock.
+Similarly for each recipe, we obtained information like description, rating, cooking time, ingredients and instructions.
 
 Installation/Running the scraper options:
 
@@ -21,8 +22,10 @@ Example usage:
      	``` ocado = OcadoScraper(scrape_categories=True) ```
 	•	Check which categories are available to scrape on the ocado website: 
      	```ocado.categories_available_to_scrape() ```
-	•	Scrape all products on the ocado website: 
-     	```ocado.scrape_products(download_images=False)```
+	•	Scrape all products and recipes on the ocado website: 
+     	```ocado.scrape(recipes=True) ```
+	•	Scrape all products on the ocado website and their images: 
+     	```ocado.scrape_products(download_images=True)```
 	•	OR scrape a subset of categories: 
      	```ocado.scrape_products(['Bakery', 'Frozen Food'])```
 
@@ -43,10 +46,13 @@ Public function to get information about the data scraped before, during and aft
 	•	```delete_saved_product_data_for_category(“Bakery”):```
 	•	```delete_downloaded_images()```
 
+3) An UML diagram of the classes and methods used to scrape the data can be found at /docs/diagram.jpg
 
-3) Package available on PYPI:  <insert link>
+4) Testing files for each class used for scraping can be found at /test/
 
-4) Image available on Docker hub: <insert link
+5) Package available on PYPI:  <insert link>
+
+6) Image available on Docker hub: <insert link
 
 
 
